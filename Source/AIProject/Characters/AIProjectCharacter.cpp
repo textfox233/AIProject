@@ -6,9 +6,12 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
-#include "GameFramework/SpringArmComponent.h"
+//#include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "AIProject/Components/HealthComponent.h"
+#include "AIProject/Components/MeleeComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -35,6 +38,15 @@ AAIProjectCharacter::AAIProjectCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = 500.f;
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+
+	// Create a health component (handles hp and death)
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	//HealthComponent->SetupAttachment(RootComponent);
+
+	// Create a melee component (handles melee attacks)
+	MeleeComponent = CreateDefaultSubobject<UMeleeComponent>(TEXT("MeleeComponent"));
+	//HealthComponent->SetupAttachment(RootComponent);
+
 
 	//// Create a camera boom (pulls in towards the player if there is a collision)
 	//CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
