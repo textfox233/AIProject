@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "AIProjectGameMode.h"
-#include "AIProjectCharacter.h"
+#include "AIProject/Characters/AIProjectCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AAIProjectGameMode::AAIProjectGameMode()
