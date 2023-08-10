@@ -3,3 +3,60 @@
 
 #include "BasicAIController.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "BehaviorTree/BlackboardComponent.h"
+
+void ABasicAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// start up the behaviour tree
+	if (AIBehavior)
+	{
+		RunBehaviorTree(AIBehavior);
+
+		// initialise blackboard values				// key					// value
+		GetBlackboardComponent()->SetValueAsVector	(TEXT("StartLocation"), GetPawn()->GetActorLocation());
+		GetBlackboardComponent()->SetValueAsBool	(TEXT("IsAlive"),		true);
+	}
+
+	// debug msg
+	else if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			15.f,
+			FColor::Yellow,
+			FString(TEXT("Behavior Tree Invalid"))
+		);
+	}
+}
+
+void ABasicAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// get the target player from the blackboard
+	UObject* TargetPlayer = GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPlayer"));
+
+	// if it's not set find a new target
+	if (!TargetPlayer)
+	{
+		TargetPlayer = ChooseTarget();
+
+		// set blackboard value						// key					// value
+		GetBlackboardComponent()->SetValueAsObject	(TEXT("TargetPlayer"),	TargetPlayer);
+	}
+
+	// if you have a target player
+	if (TargetPlayer != nullptr)
+	{
+
+	}
+}
+
+APawn* ABasicAIController::ChooseTarget()
+{
+	// basic implementation, only return player 1
+	return GetWorld()->GetFirstPlayerController()->GetPawn();
+}

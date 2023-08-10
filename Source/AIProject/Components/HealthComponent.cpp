@@ -20,15 +20,17 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			FColor::Green,
-			FString(TEXT("UHealthComponent::BeginPlay()"))
-			);
-	}
+	
+	/// debug msg
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		15.f,
+	//		FColor::Green,
+	//		FString(TEXT("UHealthComponent::BeginPlay()"))
+	//		);
+	//}
 }
 
 

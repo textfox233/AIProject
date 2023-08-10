@@ -20,15 +20,17 @@ void UMeleeComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			FColor::Green,
-			FString(TEXT("UMeleeComponent::BeginPlay()"))
-		);
-	}
+	
+	/// debug msg
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		15.f,
+	//		FColor::Green,
+	//		FString(TEXT("UMeleeComponent::BeginPlay()"))
+	//	);
+	//}
 }
 
 
