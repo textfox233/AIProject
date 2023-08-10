@@ -51,7 +51,18 @@ void ABasicAIController::Tick(float DeltaSeconds)
 	// if you have a target player
 	if (TargetPlayer != nullptr)
 	{
+		// cast it
+		if (APawn* PlayerPawn = Cast<APawn>(TargetPlayer))
+		{
+			// check they're within line of sight
+			if (LineOfSightTo(PlayerPawn))
+			{
+				// save their position on blackboard		// key								// value
+				GetBlackboardComponent()->SetValueAsVector	(TEXT("PlayerLocation"),			PlayerPawn->GetActorLocation());
+				GetBlackboardComponent()->SetValueAsVector	(TEXT("LastKnownPlayerLocation"),	PlayerPawn->GetActorLocation());
 
+			}
+		}
 	}
 }
 
