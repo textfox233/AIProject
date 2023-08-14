@@ -68,6 +68,11 @@ void ABasicAIController::Tick(float DeltaSeconds)
 
 APawn* ABasicAIController::ChooseTarget()
 {
-	// basic implementation, only return player 1
-	return GetWorld()->GetFirstPlayerController()->GetPawn();
+	// basic implementation, only returns player 1
+	APawn* Target = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+	// if target is within line of sight, return it
+	
+
+	return nullptr;
 }
