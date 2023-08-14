@@ -62,6 +62,11 @@ void ABasicAIController::Tick(float DeltaSeconds)
 				GetBlackboardComponent()->SetValueAsVector	(TEXT("LastKnownPlayerLocation"),	PlayerPawn->GetActorLocation());
 
 			}
+			// otherwise clear the player location
+			else
+			{
+				GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
+			}
 		}
 	}
 }
@@ -72,7 +77,7 @@ APawn* ABasicAIController::ChooseTarget()
 	APawn* Target = GetWorld()->GetFirstPlayerController()->GetPawn();
 
 	// if target is within line of sight, return it
-	
-
+	if (LineOfSightTo(Target))	{ return Target; }
+	// otherwise return null
 	return nullptr;
 }
