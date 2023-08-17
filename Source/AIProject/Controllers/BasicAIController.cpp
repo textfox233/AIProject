@@ -65,6 +65,17 @@ void ABasicAIController::Tick(float DeltaSeconds)
 			// otherwise clear the player location
 			else
 			{
+				/// debug msg
+				//if (GEngine)
+				//{
+				//	GEngine->AddOnScreenDebugMessage(
+				//		-1,
+				//		15.f,
+				//		FColor::Yellow,
+				//		FString(TEXT("Player not visible"))
+				//	);
+				//}
+				//GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), );
 				GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
 			}
 		}
