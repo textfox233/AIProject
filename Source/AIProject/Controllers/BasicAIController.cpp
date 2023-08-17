@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+//#include "Perception/AIPerceptionComponent.h"
+
 void ABasicAIController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,6 +22,12 @@ void ABasicAIController::BeginPlay()
 		GetBlackboardComponent()->SetValueAsBool	(TEXT("IsAlive"),		true);
 	}
 
+	// bind something
+	if (HasAuthority()) // is this necessary?
+	{
+
+	}
+
 	// debug msg
 	else if (GEngine)
 	{
@@ -31,6 +39,12 @@ void ABasicAIController::BeginPlay()
 		);
 	}
 }
+
+//ABasicAIController::ABasicAIController()
+//{
+//	// create AI perception component (handles perception)
+//	//PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent ")); // AI perception component already in AAIController?
+//}
 
 void ABasicAIController::Tick(float DeltaSeconds)
 {
