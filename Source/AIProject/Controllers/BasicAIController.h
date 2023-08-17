@@ -17,11 +17,20 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	//ABasicAIController();
+
 	virtual void Tick(float DeltaSeconds) override;
+	
+	// when a player or other enemy is spotted
+	virtual void OnTargetSpotted();
+
 
 private:
 	UPROPERTY(EditAnywhere)
 	class UBehaviorTree* AIBehavior;
+	
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	//	class UAIPerceptionComponent* PerceptionComponent;
 
 	APawn* ChooseTarget();
 };
