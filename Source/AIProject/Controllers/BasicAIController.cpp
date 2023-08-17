@@ -38,16 +38,16 @@ void ABasicAIController::Tick(float DeltaSeconds)
 
 	//// get the target player from the blackboard
 	//UObject* TargetPlayer = GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPlayer"));
-
+	//
 	//// if it's not set find a new target
 	//if (!TargetPlayer)
 	//{
 	//	TargetPlayer = ChooseTarget();
-
+	//
 	//	// set blackboard value						// key					// value
 	//	GetBlackboardComponent()->SetValueAsObject	(TEXT("TargetPlayer"),	TargetPlayer);
 	//}
-
+	//
 	//// if you have a target player
 	//if (TargetPlayer != nullptr)
 	//{
@@ -60,7 +60,7 @@ void ABasicAIController::Tick(float DeltaSeconds)
 	//			// save their position on blackboard		// key								// value
 	//			GetBlackboardComponent()->SetValueAsVector	(TEXT("PlayerLocation"),			PlayerPawn->GetActorLocation());
 	//			GetBlackboardComponent()->SetValueAsVector	(TEXT("LastKnownPlayerLocation"),	PlayerPawn->GetActorLocation());
-
+	//
 	//		}
 	//		// otherwise clear the player location
 	//		else
@@ -75,7 +75,7 @@ void ABasicAIController::Tick(float DeltaSeconds)
 	//			//		FString(TEXT("Player not visible"))
 	//			//	);
 	//			//}
-
+	//
 	//			//GetBlackboardComponent()->SetValueAsVector(TEXT("PlayerLocation"), );
 	//			GetBlackboardComponent()->ClearValue(TEXT("PlayerLocation"));
 	//		}
