@@ -162,10 +162,9 @@ void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
 		);
 	}
 
-	MeleeComponent->DrawRadialAtk(true, true);
-}
+	// perform a melee attack
+	MeleeComponent->PerformBasicAttack();
 
-void AAIProjectCharacter::Attack()
-{
-	MeleeComponent;
+	// track the character's hand
+	//MeleeComponent->DrawRadialAtk(true, true);
 }

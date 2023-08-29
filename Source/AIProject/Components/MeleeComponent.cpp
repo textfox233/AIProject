@@ -156,7 +156,7 @@ AActor* UMeleeComponent::DrawRadialAtk(bool bDrawDebug, bool bDebugLog)
 	return nullptr;
 }
 
-void UMeleeComponent::BasicAtk()
+void UMeleeComponent::PerformBasicAttack()
 {
 	// cast to character
 	if (ACharacter* owningCharacter = Cast<ACharacter>(GetOwner()))
@@ -165,6 +165,16 @@ void UMeleeComponent::BasicAtk()
 		if (BasicAttackMontage)
 		{
 			owningCharacter->PlayAnimMontage(BasicAttackMontage);
+		}
+		// debug msg
+		else if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Red,
+				FString(TEXT("BasicAttackMontage is Null"))
+			);
 		}
 	}
 }

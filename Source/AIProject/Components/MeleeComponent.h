@@ -27,7 +27,7 @@ public:
 	// -- Draw a line trace to track a weapon's movement and detect hit events
 	AActor* DrawRadialAtk(bool bDrawDebug, bool bDebugLog);
 
-	void BasicAtk();
+	void PerformBasicAttack();
 
 protected:
 	// Called when the game starts

@@ -64,9 +64,6 @@ protected:
 	/** Called for testing input */
 	void TestSomething(const FInputActionValue& Value);
 
-	/** Called for testing input */
-	void Attack(/*const FInputActionValue& Value*/);
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
