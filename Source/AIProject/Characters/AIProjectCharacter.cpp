@@ -76,6 +76,17 @@ void AAIProjectCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	/// debug msg
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		15.f,
+	//		FColor::Yellow,
+	//		FString(TEXT("AI Project Character"))
+	//	);
+	//}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -96,6 +107,8 @@ void AAIProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Look);
 
+		//Test Something
+		EnhancedInputComponent->BindAction(TestAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestSomething);
 	}
 
 }
@@ -136,6 +149,23 @@ void AAIProjectCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
+{
+	/// debug msg
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			2.f,
+			FColor::Yellow,
+			FString(TEXT("Testing Something..."))
+		);
+	}
 
+	MeleeComponent->DrawRadialAtk(true, true);
+}
 
-
+void AAIProjectCharacter::Attack()
+{
+	MeleeComponent;
+}

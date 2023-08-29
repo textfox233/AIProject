@@ -5,18 +5,18 @@
 
 EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	Super::ExecuteTask(OwnerComp, NodeMemory);
-
 	/// debug msg
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
-			15.f,
+			5.f,
 			FColor::Yellow,
 			FString(TEXT("Attack Task Executing"))
 		);
 	}
+
+	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	return EBTNodeResult::Succeeded;
 }

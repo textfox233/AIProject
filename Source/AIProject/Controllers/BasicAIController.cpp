@@ -12,6 +12,17 @@ void ABasicAIController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	/// debug msg
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			15.f,
+			FColor::Cyan,
+			FString(TEXT("AIController::BeginPlay()"))
+		);
+	}
+
 	// start up the behaviour tree
 	if (AIBehavior)
 	{
@@ -28,12 +39,12 @@ void ABasicAIController::BeginPlay()
 
 	}
 
-	// debug msg
+	/// debug msg
 	else if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
-			15.f,
+			5.f,
 			FColor::Yellow,
 			FString(TEXT("Behavior Tree Invalid"))
 		);

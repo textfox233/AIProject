@@ -45,6 +45,10 @@ class AAIProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 
+	/** Testing Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* TestAction;
+
 public:
 	AAIProjectCharacter();
 	
@@ -57,6 +61,11 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	/** Called for testing input */
+	void TestSomething(const FInputActionValue& Value);
+
+	/** Called for testing input */
+	void Attack(/*const FInputActionValue& Value*/);
 
 protected:
 	// APawn interface

@@ -22,7 +22,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	
 	// when a player or other enemy is spotted
-	virtual void OnTargetSpotted();
+	//virtual void OnTargetSpotted();
 
 
 private:
