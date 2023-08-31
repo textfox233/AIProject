@@ -8,15 +8,15 @@ EBTNodeResult::Type UBTT_Wander::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
 	/// debug msg
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(
-			-1,
-			15.f,
-			FColor::Yellow,
-			FString(TEXT("Wander Task Executing"))
-		);
-	}
+	//if (GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		15.f,
+	//		FColor::Yellow,
+	//		FString(TEXT("Wander Task Executing"))
+	//	);
+	//}
 
 	return EBTNodeResult::Succeeded;
 }
