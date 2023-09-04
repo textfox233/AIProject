@@ -158,6 +158,15 @@ AActor* UMeleeComponent::DrawRadialAtk(bool bDrawDebug, bool bDebugLog)
 
 void UMeleeComponent::PerformBasicAttack()
 {
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Green,
+				FString(TEXT("UMeleeComponent::PerformBasicAttack()"))
+			);
+		}
 	// cast to character
 	if (ACharacter* owningCharacter = Cast<ACharacter>(GetOwner()))
 	{

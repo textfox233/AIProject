@@ -25,9 +25,9 @@ class AAIProjectCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
 	
-	///** Melee Component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
-	class UMeleeComponent* MeleeComponent;
+	/////** Melee Component */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	//class UMeleeComponent* MeleeComponent;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -52,6 +52,9 @@ class AAIProjectCharacter : public ACharacter
 public:
 	AAIProjectCharacter();
 	
+	///** Melee Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
+	class UMeleeComponent* MeleeComponent;
 
 protected:
 
@@ -64,7 +67,6 @@ protected:
 	/** Called for testing input */
 	void TestSomething(const FInputActionValue& Value);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	

@@ -3,6 +3,12 @@
 
 #include "BTT_Attack.h"
 
+#include "AIProject/Characters/AIProjectCharacter.h"
+#include "AIProject/Components/MeleeComponent.h"
+
+#include "AIController.h"
+
+
 EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	/// debug msg
@@ -15,6 +21,40 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 			FString(TEXT("Attack Task Executing"))
 		);
 	}
+
+	// get melee component
+	if (AAIProjectCharacter* ownerCharacter = Cast<AAIProjectCharacter>(OwnerComp.GetAIOwner()->GetPawn()))
+	{
+		if (UMeleeComponent* meleeComponent = ownerCharacter->MeleeComponent)
+		{
+			// perform basic attack using melee component
+			meleeComponent->PerformBasicAttack();
+		}
+		/// debug msg
+		else if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				5.f,
+				FColor::Red,
+				FString(TEXT("No Melee Component"))
+			);
+		}
+	}
+	/// debug msg
+	else if (GEngine)
+	{
+		FString debugMessage = FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetAIOwner()->GetPawn()->GetName());
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			5.f,
+			FColor::Red,
+			//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
+			debugMessage
+		);
+	}
+
+
 
 	Super::ExecuteTask(OwnerComp, NodeMemory);
 
