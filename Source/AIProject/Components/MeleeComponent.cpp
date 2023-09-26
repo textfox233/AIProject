@@ -2,7 +2,7 @@
 
 
 #include "MeleeComponent.h"
-//#include "AIProject/Characters/AIProjectCharacter.h"
+#include "AIProject/Characters/AIProjectCharacter.h"
 
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -26,11 +26,11 @@ void UMeleeComponent::BeginPlay()
 	// ...
 	
 	/// debug msg
-	if (GEngine)
+	if (bDebugMsg && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
-			15.f,
+			5.f,
 			FColor::Cyan,
 			FString(TEXT("UMeleeComponent::BeginPlay()"))
 		);
@@ -59,8 +59,8 @@ void UMeleeComponent::MeleeTraceInProgress()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("timer active"));
 
-	// perform line trace (debug? / logs?)
-	AActor* hit = DrawRadialAtk(true, false);
+	// perform line trace
+	AActor* hit = DrawRadialAtk();
 
 	//// process the hit
 	//if (UMeleeComponent(hit))
@@ -89,18 +89,18 @@ void UMeleeComponent::MeleeTraceEnd()
 }
 
 // -- Draw a line trace to track a weapon's movement and detect hit events
-AActor* UMeleeComponent::DrawRadialAtk(bool bDrawDebug, bool bDebugLog)
+AActor* UMeleeComponent::DrawRadialAtk()
 {
 	/// debug msg
-	//if (GEngine)
-	//{
-	//	GEngine->AddOnScreenDebugMessage(
-	//		-1,
-	//		15.f,
-	//		FColor::Yellow,
-	//		FString(TEXT("Drawing Debug Sphere"))
-	//	);
-	//}
+	if (bDebugMsg && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString(TEXT("Drawing Debug Sphere"))
+		);
+	}
 	 
 	// define points for line trace
 	//FHitResult Hit;
@@ -158,25 +158,44 @@ AActor* UMeleeComponent::DrawRadialAtk(bool bDrawDebug, bool bDebugLog)
 
 void UMeleeComponent::PerformBasicAttack()
 {
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1,
-				15.f,
-				FColor::Green,
-				FString(TEXT("UMeleeComponent::PerformBasicAttack()"))
-			);
-		}
-	// cast to character
-	if (ACharacter* owningCharacter = Cast<ACharacter>(GetOwner()))
+	if (bDebugMsg && GEngine)
 	{
-		// play montage
+		GEngine->AddOnScreenDebugMessage(
+			2,
+			1.f,
+			FColor::Green,
+			FString(TEXT("UMeleeComponent::PerformBasicAttack()"))
+		);
+	}
+
+	// if NOT in unoccupied state THEN exit function and give a debug message
+	// 1. Cast to custom character class
+	if (AAIProjectCharacter* owningCharacter = Cast<AAIProjectCharacter>(GetOwner()))
+	{
+		// 2. Check state
+		if (owningCharacter->GetActionState() != EAS_Unoccupied)
+		{
+			/// debug msg
+			if (bDebugMsg && GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(
+					2,
+					1.f,
+					FColor::Red,
+					FString(TEXT("Owning Character is NOT unoccupied"))
+				);
+			}
+			return;
+		}
+		// play the attack and set the action state
 		if (BasicAttackMontage)
 		{
 			owningCharacter->PlayAnimMontage(BasicAttackMontage);
+
+			owningCharacter->SetActionState(EActionState::EAS_Attacking);
 		}
 		// debug msg
-		else if (GEngine)
+		else if (bDebugMsg && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,
@@ -186,4 +205,24 @@ void UMeleeComponent::PerformBasicAttack()
 			);
 		}
 	}
+
+	//// cast to base character class
+	//if (ACharacter* owningCharacter = Cast<ACharacter>(GetOwner()))
+	//{
+	//	// play montage
+	//	if (BasicAttackMontage)
+	//	{
+	//		owningCharacter->PlayAnimMontage(BasicAttackMontage);
+	//	}
+	//	// debug msg
+	//	else if (bDebugMsg && GEngine)
+	//	{
+	//		GEngine->AddOnScreenDebugMessage(
+	//			-1,
+	//			15.f,
+	//			FColor::Red,
+	//			FString(TEXT("BasicAttackMontage is Null"))
+	//		);
+	//	}
+	//}
 }

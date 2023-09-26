@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "CharacterTypes.h"
 #include "InputActionValue.h"
 #include "AIProjectCharacter.generated.h"
 
@@ -49,6 +50,8 @@ class AAIProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* TestAction;
 
+	EActionState ActionState = EActionState::EAS_Unoccupied;
+
 public:
 	AAIProjectCharacter();
 	
@@ -73,10 +76,14 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
-//public:
+public:
 //	/** Returns CameraBoom subobject **/
 //	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 //	/** Returns FollowCamera subobject **/
 //	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	// Setters/Getters
+	FORCEINLINE void SetActionState(EActionState NewState) { ActionState = NewState; }
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 };
 

@@ -155,8 +155,8 @@ void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
-			-1,
-			2.f,
+			1,
+			1.f,
 			FColor::Yellow,
 			FString(TEXT("Testing Something..."))
 		);
@@ -166,5 +166,5 @@ void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
 	MeleeComponent->PerformBasicAttack();
 
 	// track the character's hand
-	//MeleeComponent->DrawRadialAtk(true, true);
+	//MeleeComponent->DrawRadialAtk();
 }

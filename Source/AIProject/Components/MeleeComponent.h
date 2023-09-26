@@ -25,7 +25,7 @@ public:
 	void MeleeTraceEnd();
 
 	// -- Draw a line trace to track a weapon's movement and detect hit events
-	AActor* DrawRadialAtk(bool bDrawDebug, bool bDebugLog);
+	AActor* DrawRadialAtk();
 
 	void PerformBasicAttack();
 
@@ -43,4 +43,13 @@ public:
 	/** Animation Montages **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess))
 		class UAnimMontage* BasicAttackMontage;
+
+private:
+	// -- Debug booleans
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+		bool bDrawDebug = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+		bool bDebugLog = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+		bool bDebugMsg = false;
 };
