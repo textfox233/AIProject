@@ -2,7 +2,7 @@
 
 
 #include "AIProject/Characters/Enemy.h"
-
+#include "Perception/AIPerceptionComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 
@@ -19,7 +19,8 @@ AEnemy::AEnemy()
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-
+	// Create a perception component (allows the AI to perceive others)
+	//AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 }
 
 void AEnemy::BeginPlay()
