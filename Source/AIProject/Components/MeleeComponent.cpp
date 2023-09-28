@@ -4,6 +4,7 @@
 #include "MeleeComponent.h"
 #include "AIProject/Characters/AIProjectCharacter.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Engine/SkeletalMeshSocket.h"
 
@@ -38,37 +39,40 @@ void UMeleeComponent::BeginPlay()
 }
 
 
-// Called every frame
-void UMeleeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-
 /// -- Set linetraces to occur until TriggerMeleeEnd()
 // Start traces
-void UMeleeComponent::MeleeTraceStart()
+void UMeleeComponent::StartHitDetection()
 {
 	// start timer
-	GetWorld()->GetTimerManager().SetTimer(MeleeTraceHandle, this, &UMeleeComponent::MeleeTraceInProgress, 0.01f, true, 0.05f);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UMeleeComponent::HitDetectionInProgress, 0.01f, true, 0.05f);
+
+	if (bDebugLog) {
+		UE_LOG(LogTemp, Warning, TEXT("Hit Detection Starting"));
+	}
 }
-// Perform single trace
-void UMeleeComponent::MeleeTraceInProgress()
+// Perform a single sphere draw
+void UMeleeComponent::HitDetectionInProgress()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("timer active"));
 
 	// perform line trace
 	AActor* hit = DrawRadialAtk();
 
-	//// process the hit
+	/// process the hit
 	//if (UMeleeComponent(hit))
 	//	// if hit was valid
 	//{
-	//	// stop line tracing - should stop multiple hits per swing
-	//	GetWorld()->GetTimerManager().ClearTimer(MeleeTraceHandle);
+	//	// stop line tracing - should prevent multiple hits per swing
+	//	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 	//}
+
+	// process the hit
+	if (ProcessMeleeHit(hit))
+		// if hit was valid
+	{
+		// stop line tracing - should stop multiple hits per swing
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	}
 
 	//if (hit != nullptr)
 	//// anything hit?
@@ -82,10 +86,14 @@ void UMeleeComponent::MeleeTraceInProgress()
 	//}
 }
 // End traces
-void UMeleeComponent::MeleeTraceEnd()
+void UMeleeComponent::EndHitDetection()
 {
 	// clear timer
-	GetWorld()->GetTimerManager().ClearTimer(MeleeTraceHandle);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+	if (bDebugLog) {
+		UE_LOG(LogTemp, Warning, TEXT("Hit Detection Ending"));
+	}
 }
 
 // -- Draw a line trace to track a weapon's movement and detect hit events
@@ -102,47 +110,59 @@ AActor* UMeleeComponent::DrawRadialAtk()
 		);
 	}
 	 
-	// define points for line trace
-	//FHitResult Hit;
-
-	// get owner
+	// get owning character
 	AActor* characterOwner = GetOwner();
-
-	// cast it
 	ACharacter* targetCharacter = Cast<ACharacter>(characterOwner);
 
 	if (targetCharacter)
 	// find the focal point
-	FVector focalPoint;
 	{
 		// get bone
 		FName leftHandBone = "hand_l";
 		FVector focalPoint = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
-		if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, 10.f, 12, FColor::Red, false, 1.0f); }
+
+		// collision parameters - ignore self
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(characterOwner);
+
+		//	collect variables
+		FCollisionShape Sphere = FCollisionShape::MakeSphere(10.f);
+		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
+
+		///	Check for collisions via UE5 sweep function
+		GetWorld()->SweepSingleByChannel(
+			HitResult,
+			focalPoint,
+			focalPoint,
+			FQuat::Identity,
+			ECC_Pawn,
+			Sphere
+		);
+
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, 10.f, 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, false, 1.0f); }
 		if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *focalPoint.ToCompactString()); }
+
+		return HitResult.GetActor();
 	}
 
 	// grab focal point
 	//const USkeletalMeshComponent* skComp = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 	//USkeletalMesh* skMesh = skComp->GetSkeletalMeshAsset();
 	//USkeletalMesh* skMesh = EquippedWeapon->FindComponentByClass<USkeletalMesh>();
-
+	//
 	// grab sockets
 	//FVector focalPoint = skMesh->GetSocketByIndex(0)->GetSocketTransform(skComp).GetLocation();
 	//FVector focalPoint = characterOwner->
-
-	//// collision parameters - ignore self
-	//FCollisionQueryParams QueryParams;
-	//QueryParams.AddIgnoredActor(this);
-	
+	//
+	//
 	// perform line trace
 	//GetWorld()->LineTraceSingleByChannel(Hit, traceStart, traceEnd, ECollisionChannel::ECC_Camera, QueryParams);
-
+	//
 	// Debug
 	//if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, 50.f, 12, FColor::Red); }
 	//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *focalPoint.ToCompactString()); }
-
-	/// if hit occurs and hit actor is valid
+	//
+	// if hit occurs and hit actor is valid
 	//if (Hit.bBlockingHit && IsValid(Hit.GetActor()))
 	//{
 	//	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Trace hit actor: %s"), *Hit.GetActor()->GetName()); }
@@ -150,10 +170,120 @@ AActor* UMeleeComponent::DrawRadialAtk()
 	//	return Hit.GetActor();
 	//}
 
-	// nothing hit
-	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("No actors hit")); }
+	/// nothing hit
+	if (bDebugLog) { UE_LOG(LogTemp, Warning, TEXT("Owner isn't a character")); }
 	
 	return nullptr;
+}
+
+// -- Process melee hits (TRUE means damage was dealt, FALSE means the hit was invalid)
+bool UMeleeComponent::ProcessMeleeHit(AActor* hitActor)
+{
+	// 1. Was anything hit at all?
+	if (hitActor == nullptr)
+	{
+		if (bDebugLog) {
+			UE_LOG(LogTemp, Warning, TEXT("Nothing was Hit"));
+		}
+		// FALSE: no target
+		return false;
+	}
+	if (bDebugLog) {
+		UE_LOG(LogTemp, Log, TEXT("ASirDingusCharacter::ProcessMeleeHit"));
+		UE_LOG(LogTemp, Warning, TEXT("%s Hit"), *hitActor->GetName());
+	}
+
+	// 2. Was the hit actor an already dead character's capsule?
+	if (AAIProjectCharacter* Character = Cast<AAIProjectCharacter>(hitActor))
+	{
+		// if character is not alive
+		EActionState CharacterState = Character->GetActionState();
+		if (CharacterState && CharacterState == EAS_Dead)
+		{
+			/// Debug
+			if (bDebugLog && GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(
+					-1,
+					2.f,
+					FColor::Yellow,
+					FString(TEXT("Target is already dead"))
+				);
+			}
+			// FALSE: target invalid
+			return false;
+		}
+	}
+
+	/// 3. Did a player just hit another player? - (potentially legacy, may want friendly fire for this project)
+	//if (GetOwner()->ActorHasTag("Player"))
+	//{
+	//	// check tags to see what is being damaged
+	//	if (hitActor->ActorHasTag("Player"))
+	//	{
+	//		/// Debug
+	//		if (bDebugLog)
+	//		{
+	//			UE_LOG(LogTemp, Log, TEXT("Target is a player"));
+	//
+	//			if (GEngine)
+	//			{
+	//				GEngine->AddOnScreenDebugMessage(
+	//					-1,
+	//					15.f,
+	//					FColor::Yellow,
+	//					FString(TEXT("Hit target is player"))
+	//				);
+	//			}
+	//		}
+	//
+	//		// FALSE: target invalid
+	//		return false;
+	//	}
+	//}
+	//
+	//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Target not a player")); }
+
+	// Upon passing the above, deal damage to the hit actor
+	if (AController* OwningController = GetOwner()->GetInstigatorController())
+	{
+		// deal damage to hit actors
+		UClass* DamageTypeClass = UDamageType::StaticClass();
+		float dmgDealt = UGameplayStatics::ApplyDamage(
+			hitActor,			// DamagedActor - Actor that will be damaged.
+			50,					// BaseDamage - The base damage to apply.
+			OwningController,	// EventInstigator - Controller that was responsible for causing this damage (e.g. player who swung the weapon)
+			GetOwner(),			// DamageCauser - Actor that actually caused the damage (e.g. the grenade that exploded)
+			DamageTypeClass		// DamageTypeClass - Class that describes the damage that was done.
+		);
+		if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("damage dealt: %f"), dmgDealt); }
+		if (bDebugMsg && GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				3.f,
+				FColor::Yellow,
+				FString::Printf(TEXT("ASirDingusCharacter::ProcessMeleeHit -> damage dealt: %f"), dmgDealt)
+			);
+		}
+
+		// TRUE: damage was dealt
+		return true;
+	}
+	/// Debug Message
+	else
+	{
+		if (bDebugMsg && GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				15.f,
+				FColor::Red,
+				FString(TEXT("Owning Controller is Invalid"))
+			);
+		}
+		return false;
+	}
 }
 
 void UMeleeComponent::PerformBasicAttack()

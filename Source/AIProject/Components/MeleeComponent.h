@@ -16,30 +16,30 @@ public:
 	// Sets default values for this component's properties
 	UMeleeComponent();
 
-	/// -- Set linetraces to occur until TriggerMeleeEnd()
-	// Start traces
-	void MeleeTraceStart();
-	// Perform single trace
-	void MeleeTraceInProgress();
-	// End traces
-	void MeleeTraceEnd();
-
-	// -- Draw a line trace to track a weapon's movement and detect hit events
-	AActor* DrawRadialAtk();
-
 	void PerformBasicAttack();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	/// -- Set sphere draws to occur until EndHitDetection()
+	// Start drawing
+	UFUNCTION(BlueprintCallable)
+		void StartHitDetection();
+	// Perform and evaluate a single draw
+	void HitDetectionInProgress();
+	// Stop Drawing
+	UFUNCTION(BlueprintCallable)
+		void EndHitDetection();
+
+	// -- Draw a sphere to track an attack's movement and detect hit events
+	AActor* DrawRadialAtk();
+
+	// -- Determine if anything was hit by a sphere, and if damage should be applied. Returns TRUE if any damage was dealt
+	bool ProcessMeleeHit(AActor* hitActor);
+
+
 public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	// -- Timer Handle
-	FTimerHandle MeleeTraceHandle;
-
 	/** Animation Montages **/
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Animation, meta = (AllowPrivateAccess))
 		class UAnimMontage* BasicAttackMontage;
@@ -52,4 +52,7 @@ private:
 		bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
 		bool bDebugMsg = false;
+
+	// -- Timer Handle
+	FTimerHandle TimerHandle;
 };
