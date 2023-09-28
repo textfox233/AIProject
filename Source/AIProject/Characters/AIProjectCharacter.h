@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,39 +12,21 @@ class AAIProjectCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	///** Camera boom positioning the camera behind the character */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	//class USpringArmComponent* CameraBoom;
-
-	///** Follow camera */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	//class UCameraComponent* FollowCamera;
-
-	///** Health Component */
+	/** Health Component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UHealthComponent* HealthComponent;
-	
-	/////** Melee Component */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
-	//class UMeleeComponent* MeleeComponent;
 
-	/** MappingContext */
+	/** Input Mapping Context */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputMappingContext* DefaultMappingContext;
 
-	/** Jump Input Action */
+	/** Input Actions */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* JumpAction;
-
-	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* MoveAction;
-
-	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
-
-	/** Testing Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* TestAction;
 
@@ -54,8 +34,8 @@ class AAIProjectCharacter : public ACharacter
 
 public:
 	AAIProjectCharacter();
-	
-	///** Melee Component */
+
+	/** Melee Component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UMeleeComponent* MeleeComponent;
 
@@ -77,12 +57,9 @@ protected:
 	virtual void BeginPlay();
 
 public:
-//	/** Returns CameraBoom subobject **/
-//	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-//	/** Returns FollowCamera subobject **/
-//	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	// Setters/Getters
+	UFUNCTION(BlueprintCallable, Category = CharacterStates)
 	FORCEINLINE void SetActionState(EActionState NewState) { ActionState = NewState; }
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 };
