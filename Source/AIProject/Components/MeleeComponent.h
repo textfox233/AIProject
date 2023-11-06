@@ -46,11 +46,11 @@ public:
 
 private:
 	// -- Debug booleans
-	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|MeleeComponent", meta = (AllowPrivateAccess = "true"))
 		bool bDrawDebug = false;
-	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|MeleeComponent", meta = (AllowPrivateAccess = "true"))
 		bool bDebugLog = false;
-	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|MeleeComponent", meta = (AllowPrivateAccess = "true"))
 		bool bDebugMsg = false;
 
 	// -- Timer Handle

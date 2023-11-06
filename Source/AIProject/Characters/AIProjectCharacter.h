@@ -28,9 +28,21 @@ class AAIProjectCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* TestAction;
+	class UInputAction* TestAction1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* TestAction2;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* TestAction3;
 
 	EActionState ActionState = EActionState::EAS_Unoccupied;
+
+	/** Debug booleans */
+	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+	//bool bDrawDebug = false;
+	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
+	//bool bDebugLog = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
+	bool bDebugMsg = false;
 
 public:
 	AAIProjectCharacter();
@@ -48,7 +60,9 @@ protected:
 	void Look(const FInputActionValue& Value);
 			
 	/** Called for testing input */
-	void TestSomething(const FInputActionValue& Value);
+	void TestFunction1(const FInputActionValue& Value);
+	void TestFunction2(const FInputActionValue& Value);
+	void TestFunction3(const FInputActionValue& Value);
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -56,11 +70,17 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	// Debug messages
+	virtual void Tick(float DeltaSeconds) override;
+
 public:
 
 	// Setters/Getters
 	UFUNCTION(BlueprintCallable, Category = CharacterStates)
-	FORCEINLINE void SetActionState(EActionState NewState) { ActionState = NewState; }
+	//FORCEINLINE void SetActionState(EActionState NewState) { ActionState = NewState; }
+	void SetActionState(EActionState NewState = EActionState::EAS_Unoccupied);
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
+	
+	void CheckActionState();
 };
 

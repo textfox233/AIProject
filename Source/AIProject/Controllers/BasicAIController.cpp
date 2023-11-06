@@ -2,6 +2,7 @@
 
 
 #include "BasicAIController.h"
+#include "AIProject/Characters/AIProjectCharacter.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -106,6 +107,14 @@ void ABasicAIController::Tick(float DeltaSeconds)
 	//		}
 	//	}
 	//}
+}
+
+void ABasicAIController::UpdateBlackboard()
+{
+	EActionState actionState = Cast<AAIProjectCharacter>(GetPawn())->GetActionState();
+
+	// initialise blackboard values				// key					// value
+	GetBlackboardComponent()->SetValueAsEnum(TEXT("Action State"), (uint8)actionState);
 }
 
 APawn* ABasicAIController::ChooseTarget()

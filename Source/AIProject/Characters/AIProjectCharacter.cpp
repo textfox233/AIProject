@@ -12,6 +12,7 @@
 
 #include "AIProject/Components/HealthComponent.h"
 #include "AIProject/Components/MeleeComponent.h"
+#include "AIProject/Controllers/BasicAIController.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -87,7 +88,83 @@ void AAIProjectCharacter::BeginPlay()
 	//		FString(TEXT("AI Project Character"))
 	//	);
 	//}
+
+	if (bDebugMsg && GEngine)
+	{
+		FString actionState = UEnum::GetValueAsString(GetActionState());
+		//FString debugMessage = FString::Printf(TEXT("Current action state is: %s"), actionState);
+		GEngine->AddOnScreenDebugMessage(
+			2,
+			5.f,
+			FColor::Green,
+			//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
+			actionState
+		);
+	}
 }
+
+void AAIProjectCharacter::Tick(float DeltaSeconds)
+{
+	//if (bDebugMsg && GEngine)
+	//{
+	//	FString debugMessage = FString::Printf(TEXT("Current action state is: %s"), GetActionState());
+	//	GEngine->AddOnScreenDebugMessage(
+	//		2,
+	//		1.f,
+	//		FColor::Red,
+	//		//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
+	//		debugMessage
+	//	);
+	//	}
+
+}
+
+void AAIProjectCharacter::SetActionState(EActionState NewState)
+{
+	FString prevState = UEnum::GetValueAsString(GetActionState());
+
+	ActionState = NewState;
+
+	// show state transition
+	if (bDebugMsg && GEngine)
+	{
+		FString currentState = UEnum::GetValueAsString(GetActionState());
+		FString msg = "EActionState transition: " + prevState + " -> " + currentState;
+		//FString debugMessage = FString::Printf(TEXT("Current action state is: %s"), actionState);
+		GEngine->AddOnScreenDebugMessage(
+			-1,
+			5.f,
+			FColor::Yellow,
+			//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
+			msg
+		);
+	}
+
+	// update blackboards (if character is an AI)
+	if (AController* owningController = GetController())
+	{
+		if (ABasicAIController* AIController = Cast<ABasicAIController>(owningController))
+		{
+			AIController->UpdateBlackboard();
+		}
+	}
+}
+
+void AAIProjectCharacter::CheckActionState()
+{
+	if (bDebugMsg && GEngine)
+	{
+		FString currentState = UEnum::GetValueAsString(GetActionState());
+		FString msg = "Current Action State: " + currentState;
+		GEngine->AddOnScreenDebugMessage(
+			5,
+			5.f,
+			FColor::Yellow,
+			msg
+		);
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -108,7 +185,9 @@ void AAIProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Look);
 
 		//Test Something
-		EnhancedInputComponent->BindAction(TestAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestSomething);
+		EnhancedInputComponent->BindAction(TestAction1, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestFunction1);
+		EnhancedInputComponent->BindAction(TestAction2, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestFunction2);
+		EnhancedInputComponent->BindAction(TestAction3, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestFunction3);
 	}
 
 }
@@ -149,16 +228,16 @@ void AAIProjectCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
+void AAIProjectCharacter::TestFunction1(const FInputActionValue& Value)
 {
 	/// debug msg
-	if (GEngine)
+	if (bDebugMsg && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			1,
 			1.f,
 			FColor::Yellow,
-			FString(TEXT("Testing Something..."))
+			FString(TEXT("Testing Function 1..."))
 		);
 	}
 
@@ -167,4 +246,34 @@ void AAIProjectCharacter::TestSomething(const FInputActionValue& Value)
 
 	// track the character's hand
 	//MeleeComponent->DrawRadialAtk();
+}
+
+void AAIProjectCharacter::TestFunction2(const FInputActionValue& Value)
+{
+	/// debug msg
+	if (bDebugMsg && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			1,
+			1.f,
+			FColor::Yellow,
+			FString(TEXT("Testing Function 2..."))
+		);
+	}
+
+	CheckActionState();
+}
+
+void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
+{
+	/// debug msg
+	if (bDebugMsg && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			1,
+			1.f,
+			FColor::Yellow,
+			FString(TEXT("Testing Function 3..."))
+		);
+	}
 }

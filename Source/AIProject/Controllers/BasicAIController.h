@@ -24,6 +24,7 @@ public:
 	// when a player or other enemy is spotted
 	//virtual void OnTargetSpotted();
 
+	void UpdateBlackboard();
 
 private:
 	UPROPERTY(EditAnywhere)

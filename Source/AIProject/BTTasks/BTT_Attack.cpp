@@ -11,8 +11,7 @@
 
 EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	/// debug msg
-	if (GEngine)
+	if (bDebugMsg && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
@@ -30,8 +29,7 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 			// perform basic attack using melee component
 			meleeComponent->PerformBasicAttack();
 		}
-		/// debug msg
-		else if (GEngine)
+		else if (bDebugMsg && GEngine)
 		{
 			GEngine->AddOnScreenDebugMessage(
 				-1,
@@ -41,8 +39,7 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 			);
 		}
 	}
-	/// debug msg
-	else if (GEngine)
+	else if (bDebugMsg && GEngine)
 	{
 		FString debugMessage = FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetAIOwner()->GetPawn()->GetName());
 		GEngine->AddOnScreenDebugMessage(

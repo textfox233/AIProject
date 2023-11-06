@@ -198,7 +198,7 @@ bool UMeleeComponent::ProcessMeleeHit(AActor* hitActor)
 	{
 		// if character is not alive
 		EActionState CharacterState = Character->GetActionState();
-		if (CharacterState && CharacterState == EAS_Dead)
+		if (CharacterState == EActionState::EAS_Dead)
 		{
 			/// Debug
 			if (bDebugLog && GEngine)
@@ -303,7 +303,7 @@ void UMeleeComponent::PerformBasicAttack()
 	if (AAIProjectCharacter* owningCharacter = Cast<AAIProjectCharacter>(GetOwner()))
 	{
 		// 2. Check state
-		if (owningCharacter->GetActionState() != EAS_Unoccupied)
+		if (owningCharacter->GetActionState() != EActionState::EAS_Unoccupied)
 		{
 			/// debug msg
 			if (bDebugMsg && GEngine)
@@ -323,6 +323,19 @@ void UMeleeComponent::PerformBasicAttack()
 			owningCharacter->PlayAnimMontage(BasicAttackMontage);
 
 			owningCharacter->SetActionState(EActionState::EAS_Attacking);
+
+			//if (bDebugMsg && GEngine)
+			//{
+			//	FString msg = UEnum::GetValueAsString(owningCharacter->GetActionState());
+			//	//FString debugMessage = FString::Printf(TEXT("Current action state is: %s"), actionState);
+			//	GEngine->AddOnScreenDebugMessage(
+			//		2,
+			//		5.f,
+			//		FColor::Green,
+			//		//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
+			//		msg
+			//	);
+			//}
 		}
 		// debug msg
 		else if (bDebugMsg && GEngine)

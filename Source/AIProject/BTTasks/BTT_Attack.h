@@ -14,6 +14,14 @@ class AIPROJECT_API UBTT_Attack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+	/** Debug booleans */
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+	bool bDrawDebug = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+	bool bDebugLog = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug", meta = (AllowPrivateAccess = "true"))
+	bool bDebugMsg = false;
+
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };
