@@ -18,7 +18,7 @@ void ABasicAIController::BeginPlay()
 	{
 		GEngine->AddOnScreenDebugMessage(
 			-1,
-			15.f,
+			1.f,
 			FColor::Cyan,
 			FString(TEXT("AIController::BeginPlay()"))
 		);

@@ -2,13 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AIProject/Interfaces/HitInterface.h"
 #include "CharacterTypes.h"
 #include "InputActionValue.h"
 #include "AIProjectCharacter.generated.h"
 
 
-UCLASS(config=Game)
-class AAIProjectCharacter : public ACharacter
+UCLASS(config = Game)
+class AAIProjectCharacter : public ACharacter, public IHitInterface
 {
 	GENERATED_BODY()
 
@@ -35,8 +36,15 @@ class AAIProjectCharacter : public ACharacter
 	class UInputAction* TestAction3;
 
 	EActionState ActionState = EActionState::EAS_Unoccupied;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Test Values | Character", meta = (AllowPrivateAccess = "true"))
+	AAIProjectCharacter* Dummy;
 
-	/** Debug booleans */
+	/** Animation Montages **/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation | Hit Reactions", meta = (AllowPrivateAccess))
+	class UAnimMontage* HitReactMontage;
+
+	/** Debug booleans **/
 	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
 	//bool bDrawDebug = false;
 	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
@@ -50,6 +58,9 @@ public:
 	/** Melee Component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Components, meta = (AllowPrivateAccess = "true"))
 	class UMeleeComponent* MeleeComponent;
+
+	/** Getting hit by an Attack or Damaging Effect **/
+	virtual void GetHit(const FVector& ImpactPoint) override;
 
 protected:
 

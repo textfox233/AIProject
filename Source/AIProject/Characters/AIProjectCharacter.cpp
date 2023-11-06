@@ -192,6 +192,24 @@ void AAIProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 }
 
+void AAIProjectCharacter::GetHit(const FVector& ImpactPoint)
+{
+	if (bDebugMsg && GEngine)
+	{
+		FString msg{ this->GetName() + TEXT(" got hit!") };
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			1.f,
+			FColor::Cyan,
+			msg
+		);
+	}
+	HealthComponent->TakeDamage(50.f);
+
+	PlayAnimMontage(HitReactMontage);
+	//SetActionState(EActionState::EAS_Interrupted);
+}
+
 void AAIProjectCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -276,4 +294,7 @@ void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 			FString(TEXT("Testing Function 3..."))
 		);
 	}
+
+	// deal damage to AI man
+	Dummy->GetHit(FVector::ForwardVector);
 }

@@ -10,8 +10,38 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	Health = MaxHealth;
 }
+
+void UHealthComponent::TakeDamage(float damageAmount)
+{
+	if (bDebugMsg && GEngine)
+	{
+		FString msg{ GetOwner()->GetName() + TEXT(" took damage!") };
+		GEngine->AddOnScreenDebugMessage(
+			2,
+			1.f,
+			FColor::Cyan,
+			msg
+		);
+	}
+
+	float prevHealth = Health;
+	Health -= damageAmount;
+
+	if (bDebugMsg && GEngine)
+	{
+		FString msg = FString::Printf(TEXT("Health was %f, is now %f!"), prevHealth, Health);
+		GEngine->AddOnScreenDebugMessage(
+			2,
+			1.f,
+			FColor::Cyan,
+			msg
+		);
+	}
+
+}
+
 
 
 // Called when the game starts
