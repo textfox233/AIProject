@@ -158,7 +158,7 @@ void AAIProjectCharacter::CheckActionState()
 		//FString msg = "Current Action State: " + currentState;
 		FString msg = "Current Action State: " + UEnum::GetValueAsString(GetActionState());
 		GEngine->AddOnScreenDebugMessage(
-			5,
+			-1,
 			5.f,
 			FColor::Yellow,
 			msg
@@ -207,7 +207,7 @@ void AAIProjectCharacter::GetHit(const FVector& ImpactPoint)
 	}
 	HealthComponent->TakeDamage(50.f);
 
-	PlayAnimMontage(HitReactMontage);
+	PlayAnimMontage(HitReactMontage, 1.f, "From Front");
 	//SetActionState(EActionState::EAS_Interrupted);
 }
 
