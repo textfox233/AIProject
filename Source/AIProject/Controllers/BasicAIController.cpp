@@ -117,6 +117,12 @@ void ABasicAIController::UpdateBlackboard()
 	GetBlackboardComponent()->SetValueAsEnum(TEXT("Action State"), (uint8)actionState);
 }
 
+void ABasicAIController::UpdateState(EActionState State)
+{
+	// initialise blackboard values				// key					// value
+	GetBlackboardComponent()->SetValueAsEnum(TEXT("Action State"), (uint8)State);
+}
+
 APawn* ABasicAIController::ChooseTarget()
 {
 	// basic implementation, only returns player 1
