@@ -119,6 +119,52 @@ void AAIProjectCharacter::Tick(float DeltaSeconds)
 
 }
 
+void AAIProjectCharacter::GetHit(const FVector& ImpactPoint)
+{
+	if (bDebugMsg && GEngine)
+	{
+		FString msg{ this->GetName() + TEXT(" got hit!") };
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			1.f,
+			FColor::Cyan,
+			msg
+		);
+	}
+
+	// deal damage
+	HealthComponent->TakeDamage(50.f);
+
+	// reaction animation
+	PlayAnimMontage(HitReactMontage, 1.f, "From Front");
+	//SetActionState(EActionState::EAS_Interrupted);
+}
+
+void AAIProjectCharacter::Die()
+{
+	if (bDebugMsg && GEngine)
+	{
+		FString msg{ this->GetName() + TEXT(" is dying!") };
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			1.f,
+			FColor::Red,
+			msg
+		);
+	}
+
+	// mark as dead
+	ActionState = EActionState::EAS_Dead;
+
+	if (ABasicAIController* AI = Cast<ABasicAIController>(Controller))
+	{
+		AI->UpdateState(ActionState);
+	}
+
+	// death animation
+	PlayAnimMontage(DeathMontage);
+}
+
 void AAIProjectCharacter::SetActionState(EActionState NewState)
 {
 	FString prevState = UEnum::GetValueAsString(GetActionState());
@@ -154,8 +200,6 @@ void AAIProjectCharacter::CheckActionState()
 {
 	if (bDebugStates && GEngine)
 	{
-		//FString currentState = UEnum::GetValueAsString(GetActionState());
-		//FString msg = "Current Action State: " + currentState;
 		FString msg = "Current Action State: " + UEnum::GetValueAsString(GetActionState());
 		GEngine->AddOnScreenDebugMessage(
 			-1,
@@ -191,24 +235,6 @@ void AAIProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 		EnhancedInputComponent->BindAction(TestAction3, ETriggerEvent::Triggered, this, &AAIProjectCharacter::TestFunction3);
 	}
 
-}
-
-void AAIProjectCharacter::GetHit(const FVector& ImpactPoint)
-{
-	if (bDebugMsg && GEngine)
-	{
-		FString msg{ this->GetName() + TEXT(" got hit!") };
-		GEngine->AddOnScreenDebugMessage(
-			3,
-			1.f,
-			FColor::Cyan,
-			msg
-		);
-	}
-	HealthComponent->TakeDamage(50.f);
-
-	PlayAnimMontage(HitReactMontage, 1.f, "From Front");
-	//SetActionState(EActionState::EAS_Interrupted);
 }
 
 void AAIProjectCharacter::Move(const FInputActionValue& Value)
@@ -285,7 +311,6 @@ void AAIProjectCharacter::TestFunction2(const FInputActionValue& Value)
 
 void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 {
-	/// debug msg
 	if (bDebugMsg && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
@@ -297,5 +322,8 @@ void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 	}
 
 	// deal damage to AI man
-	Dummy->GetHit(FVector::ForwardVector);
+	//Dummy->GetHit(FVector::ForwardVector);
+
+	// kill the AI man
+	Dummy->Die();
 }

@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "BasicAIController.generated.h"
 
+enum class EActionState : uint8;
+
 /**
  * 
  */
@@ -25,6 +27,8 @@ public:
 	//virtual void OnTargetSpotted();
 
 	void UpdateBlackboard();
+
+	void UpdateState(EActionState State);
 
 private:
 	UPROPERTY(EditAnywhere)

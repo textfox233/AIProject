@@ -44,11 +44,10 @@ class AAIProjectCharacter : public ACharacter, public IHitInterface
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation | Hit Reactions", meta = (AllowPrivateAccess))
 	class UAnimMontage* HitReactMontage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation | Dying", meta = (AllowPrivateAccess))
+	class UAnimMontage* DeathMontage;
+
 	/** Debug booleans **/
-	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
-	//bool bDrawDebug = false;
-	//UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = Debug, meta = (AllowPrivateAccess = "true"))
-	//bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
 	bool bDebugMsg = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
@@ -63,6 +62,8 @@ public:
 
 	/** Getting hit by an Attack or Damaging Effect **/
 	virtual void GetHit(const FVector& ImpactPoint) override;
+
+	void Die();
 
 protected:
 
@@ -96,4 +97,3 @@ public:
 	UFUNCTION(BlueprintCallable, Category = CharacterStates)
 	void CheckActionState();
 };
-
