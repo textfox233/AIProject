@@ -152,10 +152,11 @@ void AAIProjectCharacter::SetActionState(EActionState NewState)
 
 void AAIProjectCharacter::CheckActionState()
 {
-	if (bDebugMsg && GEngine)
+	if (bDebugStates && GEngine)
 	{
-		FString currentState = UEnum::GetValueAsString(GetActionState());
-		FString msg = "Current Action State: " + currentState;
+		//FString currentState = UEnum::GetValueAsString(GetActionState());
+		//FString msg = "Current Action State: " + currentState;
+		FString msg = "Current Action State: " + UEnum::GetValueAsString(GetActionState());
 		GEngine->AddOnScreenDebugMessage(
 			5,
 			5.f,

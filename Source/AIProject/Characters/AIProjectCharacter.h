@@ -51,6 +51,8 @@ class AAIProjectCharacter : public ACharacter, public IHitInterface
 	//bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
 	bool bDebugMsg = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
+	bool bDebugStates = false;
 
 public:
 	AAIProjectCharacter();
@@ -88,10 +90,10 @@ public:
 
 	// Setters/Getters
 	UFUNCTION(BlueprintCallable, Category = CharacterStates)
-	//FORCEINLINE void SetActionState(EActionState NewState) { ActionState = NewState; }
 	void SetActionState(EActionState NewState = EActionState::EAS_Unoccupied);
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 	
+	UFUNCTION(BlueprintCallable, Category = CharacterStates)
 	void CheckActionState();
 };
 
