@@ -337,10 +337,10 @@ void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 	}
 
 	// deal damage to AI man
-	//Dummy->GetHit(FVector::ForwardVector);
+	Dummy->GetHit(FVector::ForwardVector);
 
 	// kill the AI man
-	Dummy->Die();
+	//Dummy->Die();
 	//PlayAnimMontage(DeathMontage, 1.f, "Falling Backward");
 	//PlayAnimMontage(DeathMontage);
 
