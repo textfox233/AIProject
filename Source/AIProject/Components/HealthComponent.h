@@ -30,7 +30,7 @@ public:
 	// Sets default values for this component's properties
 	UHealthComponent();
 
-	void TakeDamage(float damageAmount);
+	bool TakeDamage(float damageAmount);
 
 protected:
 	// Called when the game starts

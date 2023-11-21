@@ -51,6 +51,8 @@ class AAIProjectCharacter : public ACharacter, public IHitInterface
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
 	bool bDebugMsg = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
+	bool bDebugLog = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Character", meta = (AllowPrivateAccess = "true"))
 	bool bDebugStates = false;
 
 public:

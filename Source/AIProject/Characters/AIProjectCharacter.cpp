@@ -131,12 +131,19 @@ void AAIProjectCharacter::GetHit(const FVector& ImpactPoint)
 			msg
 		);
 	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("%s got hit!"), *this->GetName());
 
 	// deal damage
-	HealthComponent->TakeDamage(50.f);
+	bool bSurvived{ HealthComponent->TakeDamage(50.f) };
 
-	// reaction animation
-	PlayAnimMontage(HitReactMontage, 1.f, "From Front");
+	// health component says live
+	if (bSurvived)
+		PlayAnimMontage(HitReactMontage, 1.f, "From Front");
+	// health component says die
+	else
+		// die
+		Die();
 	//SetActionState(EActionState::EAS_Interrupted);
 }
 
@@ -152,16 +159,21 @@ void AAIProjectCharacter::Die()
 			msg
 		);
 	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("%s is dying!"), *this->GetName())
 
-	// mark as dead
-	ActionState = EActionState::EAS_Dead;
+	//// mark as dead
+	//ActionState = EActionState::EAS_Dead;
 
-	if (ABasicAIController* AI = Cast<ABasicAIController>(Controller))
-	{
-		AI->UpdateState(ActionState);
-	}
+	//CheckActionState();
+
+	//if (ABasicAIController* AI = Cast<ABasicAIController>(Controller))
+	//{
+	//	AI->UpdateState(ActionState);
+	//}
 
 	// death animation
+	//PlayAnimMontage(DeathMontage, 1.f, "Falling Backward");
 	PlayAnimMontage(DeathMontage);
 }
 
@@ -208,6 +220,9 @@ void AAIProjectCharacter::CheckActionState()
 			msg
 		);
 	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("Current Action State : %s"), *UEnum::GetValueAsString(
+			GetActionState()))
 }
 
 
@@ -326,4 +341,7 @@ void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 
 	// kill the AI man
 	Dummy->Die();
+	//PlayAnimMontage(DeathMontage, 1.f, "Falling Backward");
+	//PlayAnimMontage(DeathMontage);
+
 }

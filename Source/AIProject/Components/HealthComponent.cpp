@@ -13,7 +13,7 @@ UHealthComponent::UHealthComponent()
 	Health = MaxHealth;
 }
 
-void UHealthComponent::TakeDamage(float damageAmount)
+bool UHealthComponent::TakeDamage(float damageAmount)
 {
 	if (bDebugMsg && GEngine)
 	{
@@ -25,6 +25,9 @@ void UHealthComponent::TakeDamage(float damageAmount)
 			msg
 		);
 	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("%s took damage!"), *GetOwner()->GetName());
+
 
 	float prevHealth = Health;
 	Health -= damageAmount;
@@ -34,11 +37,24 @@ void UHealthComponent::TakeDamage(float damageAmount)
 		FString msg = FString::Printf(TEXT("Health was %f, is now %f!"), prevHealth, Health);
 		GEngine->AddOnScreenDebugMessage(
 			2,
-			1.f,
+			4.f,
 			FColor::Cyan,
 			msg
 		);
 	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("Health was %f, is now %f!"), prevHealth, Health);
+
+	// return true if entity should survive this damage
+	if (Health > 0)
+	{
+		if (bDebugLog)
+			UE_LOG(LogTemp, Display, TEXT("%s should survive"), *GetOwner()->GetName());
+		return true;
+	}
+	if (bDebugLog)
+		UE_LOG(LogTemp, Display, TEXT("%s should die"), *GetOwner()->GetName());
+	return false;
 
 }
 
