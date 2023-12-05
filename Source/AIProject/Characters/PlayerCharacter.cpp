@@ -113,8 +113,8 @@ void APlayerCharacter::BeginPlay()
 	AimCameraTimeline.SetTimelineFinishedFunc(FOVFinishedEvent);
 
 	// Get the current camera location
-//	StartCameraLocation = FollowCamera->GetRelativeLocation();
-//	DefaultFOV = FollowCamera->FieldOfView;
+	StartCameraLocation = FollowCamera->GetRelativeLocation();
+	DefaultFOV = FollowCamera->FieldOfView;
 
 }
 
@@ -146,34 +146,34 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 
 void APlayerCharacter::Interact()
 {
-	//	FVector Start = FollowCamera->GetComponentLocation();
-	//	FVector End = Start + GetControlRotation().Vector() * 300.f;
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector End = Start + GetControlRotation().Vector() * 300.f;
 
-	//	FCollisionQueryParams QueryParams;
-	//	QueryParams.AddIgnoredActor(this);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
 
-	//	FHitResult HitResult;
+	FHitResult HitResult;
 
-	//	if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(), QueryParams))
-	//	{
-	//		if (AActor* Actor = HitResult.GetActor())
-	//		{
-				// Check if server and call server RPC
-	//			if (HasAuthority())
-	//			{
-	//				if (IInteractionInterface* Interface = Cast<IInteractionInterface>(Actor))
-	//				{
-	//					APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	//					Interface->Use(PlayerController);
-	//				}
-	//			}
-	//			else
-	//			{
-	//				// Call to server
-	//				Server_Interact();
-	//			}
-	//		}
-	//	}
+	if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(), QueryParams))
+	{
+		if (AActor* Actor = HitResult.GetActor())
+		{
+			// Check if server and call server RPC
+			if (HasAuthority())
+			{
+				if (IInteractionInterface* Interface = Cast<IInteractionInterface>(Actor))
+				{
+					APlayerController* PlayerController = Cast<APlayerController>(GetController());
+					Interface->Use(PlayerController);
+				}
+			}
+			else
+			{
+				// Call to server
+				Server_Interact();
+			}
+		}
+	}
 }
 
 bool APlayerCharacter::Server_Interact_Validate()
@@ -193,13 +193,13 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(APlayerCharacter, EquippedFlashlight, COND_OwnerOnly);
 
 		// Replicate the bIsAiming variable.
-	//	DOREPLIFETIME(APlayerCharacter, bIsAiming);
+		//DOREPLIFETIME(APlayerCharacter, bIsAiming);
 
 		// Replicate the bLeftCamera variable.
-	//	DOREPLIFETIME(APlayerCharacter, bLeftCamera);
+		//DOREPLIFETIME(APlayerCharacter, bLeftCamera);
 
 		// Replicate the SpawnedWeapon
-	//	DOREPLIFETIME(APlayerCharacter, SpawnedWeapon);
+		//DOREPLIFETIME(APlayerCharacter, SpawnedWeapon);
 }
 
 void APlayerCharacter::ToggleFlashlight()
