@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AIProject/Interactable/PlayerFlashlight.h"
 #include "Components/SpotLightComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -9,7 +8,7 @@
 // Sets default values
 APlayerFlashlight::APlayerFlashlight()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Set up Flashlight mesh
@@ -36,34 +35,40 @@ APlayerFlashlight::APlayerFlashlight()
 void APlayerFlashlight::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
+// Replication callback when the replicated light state changes
 void APlayerFlashlight::OnRep_LightToggled()
 {
+	// Toggle visibility of SpotLightComponent based on inverse value of bLightOn boolean
 	SpotLightComponent->SetHiddenInGame(!bLightOn);
 }
 
+// Specify which properties are replicated
 void APlayerFlashlight::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	// Replicate the bLightOn variable.
 	DOREPLIFETIME(APlayerFlashlight, bLightOn);
 }
 
+// Validate function for server-side flashlight toggle
 bool APlayerFlashlight::Server_ToggleFlashlight_Validate()
 {
 	return true;
 }
 
+// Server-side function to toggle flashlight (replicated)
 void APlayerFlashlight::Server_ToggleFlashlight_Implementation()
 {
 	ToggleFlashlight();
 }
 
-
+// Function to toggle the flashlight's state
 void APlayerFlashlight::ToggleFlashlight()
 {
+	// Check if code is being executed on server
 	if (HasAuthority())
 	{
 		SpotLightComponent->SetHiddenInGame(bLightOn);
@@ -76,4 +81,3 @@ void APlayerFlashlight::ToggleFlashlight()
 		Server_ToggleFlashlight();
 	}
 }
-

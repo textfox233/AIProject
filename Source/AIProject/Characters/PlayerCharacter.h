@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIProjectCharacter.h"
+#include "Components/TimelineComponent.h"
 #include "PlayerCharacter.generated.h"
 
 class IInteractInterface;
@@ -80,18 +81,18 @@ protected:
 	bool Server_Interact_Validate();
 
 	// Remote Procedure Call to ensure aiming weapon is replicated across clients
-//	UFUNCTION(Server, Reliable, WithValidation)
-//	void Server_AimWeapon();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_AimWeapon();
 
 	// Validation for aiming RPC
-//	bool Server_AimWeapon_Validate();
+	bool Server_AimWeapon_Validate();
 
 	// Remote Procedure Call to ensure that unaiming weapon is replicated across clients
-//	UFUNCTION(Server, Reliable, WithValidation)
-//	void Server_StopAiming();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_StopAiming();
 
 	// Validation for unaiming RPC
-//	bool Server_StopAiming_Validate();
+	bool Server_StopAiming_Validate();
 
 	// Remote Procedure Call to ensure that firing weapon is replicated across clients
 //	UFUNCTION(Server, Reliable, WithValidation)
@@ -130,7 +131,7 @@ protected:
 
 	void ToggleFlashlight();
 
-	//	void ToggleCamera();
+	void ToggleCamera();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Timeline")
 	UCurveFloat* CameraCurve = nullptr;
@@ -144,17 +145,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float WalkSpeed = 300.f;
 
-	//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	//	TSubclassOf<class AWeapon> WeaponClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
+	TSubclassOf<class AWeapon> WeaponClass;
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Character")
 	bool bIsAiming;
 
-	//	UFUNCTION(BlueprintCallable, Category = "Character")
-	//	void AimWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void AimWeapon();
 
-	//	UFUNCTION(BlueprintCallable, Category = "Character")
-	//	void StopAiming();
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void StopAiming();
 
 	//	UFUNCTION(BlueprintCallable, Category = "Character")
 	//	void FireWeapon();
@@ -165,8 +166,8 @@ protected:
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Character")
 	bool bLeftCamera;
 
-	//	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Weapons")
-	//	class AWeapon* SpawnedWeapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Weapons")
+	class AWeapon* SpawnedWeapon;
 
 	//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
 	//	TSubclassOf<class AProjectile> ProjectileClass;
@@ -189,16 +190,15 @@ private:
 	FVector StartCameraLocation;
 	FVector NewCameraLocation;
 
-	//	UFUNCTION()
-	//	void MoveCameraUpdate(float Alpha);
+	UFUNCTION()
+	void MoveCameraUpdate(float Alpha);
 
-	//	UFUNCTION()
-	//	void MoveCameraFinished();
+	UFUNCTION()
+	void MoveCameraFinished();
 
-	//	UFUNCTION()
-	//	void ChangeFOVUpdate(float Alpha);
+	UFUNCTION()
+	void ChangeFOVUpdate(float Alpha);
 
-	//	UFUNCTION()
-	//	void ChangeFOVFinished();
-
+	UFUNCTION()
+	void ChangeFOVFinished();
 };

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "Components/TimelineComponent.h"
 #include "AIProjectCharacter.generated.h"
 
 class IInteractInterface;

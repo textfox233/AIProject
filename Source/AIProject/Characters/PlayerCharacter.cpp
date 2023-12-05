@@ -15,8 +15,8 @@
 #include "Net/UnrealNetwork.h"
 #include "AIProject/Interfaces/InteractionInterface.h"
 #include "AIProject/Interactable/PlayerFlashlight.h"
+#include "AIProject/Items/Weapons/Weapon.h"
 
-//#include "Items/Weapons/Weapon.h"
 //#include "Projectiles/Projectile.h"
 
 #include "Blueprint/UserWidget.h"
@@ -30,12 +30,12 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Set default value for the MaxWalkSpeed of the playable character
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	GetCharacterMovement()->MaxWalkSpeed = 350.f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = 200.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = true; // Rotate the arm based on the controller
 	
 	// Create a follow camera
@@ -58,24 +58,24 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// Ensure WeaponClass is not nullptr
-//	if (WeaponClass)
-//	{
+	if (WeaponClass)
+	{
 		// Calculate the spawn transform (location, rotation, scale) for the weapon.
-//		FTransform SpawnTransform = FTransform::Identity;
+		FTransform SpawnTransform = FTransform::Identity;
 
 		// Spawn the weapon actor
-	//	SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnTransform);
+		SpawnedWeapon = GetWorld()->SpawnActor<AWeapon>(WeaponClass, SpawnTransform);
 
-	//	if (SpawnedWeapon)
-	//	{
-	//		USkeletalMeshComponent* CharacterMesh = GetMesh();
-	//		if (CharacterMesh)
-	//		{
-	//			FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-	//			SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_R");
-	//		}
-	//	}
-//	}
+		if (SpawnedWeapon)
+		{
+			USkeletalMeshComponent* CharacterMesh = GetMesh();
+			if (CharacterMesh)
+			{
+				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_R");
+			}
+		}
+	}
 
 	// Check to see if client has authority (i.e is server)
 	// Good series on this: https://www.youtube.com/watch?v=TbaOyvWfJE0&list=PLZlv_N0_O1gYwhBTjNLSFPRiBpwe5sTwc&index=1
@@ -122,6 +122,88 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	MoveCameraTimeline.TickTimeline(DeltaTime);
+	AimCameraTimeline.TickTimeline(DeltaTime);
+
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector End = Start + GetControlRotation().Vector() * 300.f;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	FHitResult HitResult;
+
+	if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(), QueryParams))
+	{
+		if (AActor* Actor = HitResult.GetActor())
+		{
+			if (IInteractionInterface* Interface = Cast<IInteractionInterface>(Actor))
+			{
+				// Access the mesh component using the interface function
+				UMeshComponent* MeshComponent = Interface->GetInteractableMeshComponent();
+				if (MeshComponent)
+				{
+					// Check if the local player triggered the line trace
+					if (IsLocallyControlled())
+					{
+						MeshComponent->SetRenderCustomDepth(true);
+
+						// Store the highlighted actor for the current client
+						HighlightedActor = Actor;
+
+						if (!HighlightedWidgetInstance && HighlightedWidgetClass)
+						{
+							HighlightedWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), HighlightedWidgetClass);
+							if (HighlightedWidgetInstance)
+							{
+								HighlightedWidgetInstance->AddToViewport();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		// If the line trace doesn't hit, remove the highlight from the previous highlighted object
+		if (HighlightedActor)
+		{
+			if (IInteractionInterface* Interface = Cast<IInteractionInterface>(HighlightedActor))
+			{
+				UMeshComponent* MeshComponent = Interface->GetInteractableMeshComponent();
+				if (MeshComponent)
+				{
+					// Check if the local player triggered the line trace
+					if (IsLocallyControlled())
+					{
+						MeshComponent->SetRenderCustomDepth(false);
+
+						if (HighlightedWidgetInstance)
+						{
+							HighlightedWidgetInstance->RemoveFromParent();
+							HighlightedWidgetInstance = nullptr;
+						}
+					}
+				}
+			}
+			HighlightedActor = nullptr;
+		}
+	}
+
+	// If the line trace doesn't hit, remove the highlight from the previously highlighted object
+	if (!HitResult.GetActor() || !Cast<IInteractionInterface>(HitResult.GetActor()))
+	{
+		if (IInteractionInterface* Interface = Cast<IInteractionInterface>(HitResult.GetActor()))
+		{
+			UMeshComponent* MeshComponent = Interface->GetInteractableMeshComponent();
+			if (MeshComponent)
+			{
+				MeshComponent->SetRenderCustomDepth(false);
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -140,6 +222,14 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 		// Flashlight
 		EnhancedInputComponent->BindAction(FlashlightAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ToggleFlashlight);
 
+		// Aim
+		EnhancedInputComponent->BindAction(AimWeaponAction, ETriggerEvent::Triggered, this, &APlayerCharacter::AimWeapon);
+
+		// Release Aim
+		EnhancedInputComponent->BindAction(ReleaseAimWeaponAction, ETriggerEvent::Triggered, this, &APlayerCharacter::StopAiming);
+
+		// Camera
+		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ToggleCamera);
 	}
 
 }
@@ -193,13 +283,13 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(APlayerCharacter, EquippedFlashlight, COND_OwnerOnly);
 
 		// Replicate the bIsAiming variable.
-		//DOREPLIFETIME(APlayerCharacter, bIsAiming);
+		DOREPLIFETIME(APlayerCharacter, bIsAiming);
 
 		// Replicate the bLeftCamera variable.
-		//DOREPLIFETIME(APlayerCharacter, bLeftCamera);
+		DOREPLIFETIME(APlayerCharacter, bLeftCamera);
 
 		// Replicate the SpawnedWeapon
-		//DOREPLIFETIME(APlayerCharacter, SpawnedWeapon);
+		DOREPLIFETIME(APlayerCharacter, SpawnedWeapon);
 }
 
 void APlayerCharacter::ToggleFlashlight()
@@ -208,4 +298,124 @@ void APlayerCharacter::ToggleFlashlight()
 	{
 		EquippedFlashlight->ToggleFlashlight();
 	}
+}
+
+void APlayerCharacter::MoveCameraUpdate(float Alpha)
+{
+	NewCameraLocation = StartCameraLocation;
+	NewCameraLocation.Y -= 130.0f;
+
+	FVector CameraLocation = FMath::Lerp(StartCameraLocation, NewCameraLocation, Alpha);
+	FollowCamera->SetRelativeLocation(CameraLocation);
+}
+
+void APlayerCharacter::MoveCameraFinished()
+{
+	bCameraMoving = false;
+	bLeftCamera = !bLeftCamera;
+
+	if (bLeftCamera)
+	{
+		if (SpawnedWeapon)
+		{
+			USkeletalMeshComponent* CharacterMesh = GetMesh();
+			if (CharacterMesh)
+			{
+				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_L");
+			}
+		}
+	}
+	else
+	{
+		if (SpawnedWeapon)
+		{
+			USkeletalMeshComponent* CharacterMesh = GetMesh();
+			if (CharacterMesh)
+			{
+				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_R");
+			}
+		}
+	}
+}
+
+void APlayerCharacter::ChangeFOVUpdate(float Alpha)
+{
+	float NewFOV = FMath::Lerp(DefaultFOV, AimFOV, Alpha);
+	FollowCamera->SetFieldOfView(NewFOV);
+}
+
+void APlayerCharacter::ChangeFOVFinished()
+{
+
+}
+
+void APlayerCharacter::ToggleCamera()
+{
+	if (!bCameraMoving)
+	{
+		bCameraMoving = true; // Camera is in the process of moving
+
+		if (!bLeftCamera)
+		{
+			MoveCameraTimeline.Play();
+		}
+		else
+		{
+			MoveCameraTimeline.Reverse();
+		}
+	}
+}
+
+void APlayerCharacter::AimWeapon()
+{
+	//GEngine->AddOnScreenDebugMessage(10, 1.f, FColor::Red, TEXT("Aiming"));
+	if (HasAuthority())
+	{
+		bIsAiming = true;
+	}
+	else
+	{
+		Server_AimWeapon();
+	}
+
+	AimCameraTimeline.Play();
+	GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
+}
+
+void APlayerCharacter::StopAiming()
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Release Aim"));
+	if (HasAuthority())
+	{
+		bIsAiming = false;
+	}
+	else
+	{
+		Server_StopAiming();
+	}
+
+	AimCameraTimeline.Reverse();
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+bool APlayerCharacter::Server_AimWeapon_Validate()
+{
+	return true;
+}
+
+void APlayerCharacter::Server_AimWeapon_Implementation()
+{
+	AimWeapon();
+}
+
+bool APlayerCharacter::Server_StopAiming_Validate()
+{
+	return true;
+}
+
+void APlayerCharacter::Server_StopAiming_Implementation()
+{
+	StopAiming();
 }
