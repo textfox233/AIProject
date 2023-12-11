@@ -175,6 +175,12 @@ protected:
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	FRotator SpineRotationX;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
+	FName WeaponSocketRight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
+	FName WeaponSocketLeft;
+
 private:
 
 	// Stores the highlighted object

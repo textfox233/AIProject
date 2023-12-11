@@ -72,7 +72,7 @@ void APlayerCharacter::BeginPlay()
 			if (CharacterMesh)
 			{
 				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_R");
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, WeaponSocketRight);
 			}
 		}
 	}
@@ -322,7 +322,7 @@ void APlayerCharacter::MoveCameraFinished()
 			if (CharacterMesh)
 			{
 				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_L");
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, WeaponSocketLeft);
 			}
 		}
 	}
@@ -334,7 +334,7 @@ void APlayerCharacter::MoveCameraFinished()
 			if (CharacterMesh)
 			{
 				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, EAttachmentRule::SnapToTarget, true);
-				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, "WeaponSocket_R");
+				SpawnedWeapon->AttachToComponent(CharacterMesh, AttachmentRules, WeaponSocketRight);
 			}
 		}
 	}
