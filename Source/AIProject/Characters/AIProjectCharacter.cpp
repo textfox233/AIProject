@@ -72,10 +72,10 @@ void AAIProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
 		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Move);
+		//EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Move);
 
 		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Look);
+		//EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AAIProjectCharacter::Look);
 
 	}
 

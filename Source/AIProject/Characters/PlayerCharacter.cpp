@@ -16,8 +16,7 @@
 #include "AIProject/Interfaces/InteractionInterface.h"
 #include "AIProject/Interactable/PlayerFlashlight.h"
 #include "AIProject/Items/Weapons/Weapon.h"
-
-//#include "Projectiles/Projectile.h"
+#include "AIProject/Projectiles/Projectile.h"
 
 #include "Blueprint/UserWidget.h"
 
@@ -219,6 +218,12 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 
+		//Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+
+		//Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		
 		// Flashlight
 		EnhancedInputComponent->BindAction(FlashlightAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ToggleFlashlight);
 
@@ -230,8 +235,29 @@ void APlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 
 		// Camera
 		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ToggleCamera);
+
+		// Fire Weapon
+		EnhancedInputComponent->BindAction(FireWeaponAction, ETriggerEvent::Triggered, this, &APlayerCharacter::FireWeapon);
+
+		// Interacting
+		//EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Interact);
 	}
 
+}
+
+void APlayerCharacter::Look(const FInputActionValue& Value)
+{
+	// Call the base class implementation if needed
+	Super::Look(Value);
+
+	if (Controller != nullptr)
+	{
+		// Calculate SpineRotationX based on Y axis input
+		FRotator ControllerRotation = GetControlRotation();
+		float Pitch = ControllerRotation.Pitch * -1.0f; // Flip the axis
+		FRotator NewSpineRotation = FRotator(0.0f, 0.0f, Pitch);
+		Server_SpineRotationX(NewSpineRotation);
+	}
 }
 
 void APlayerCharacter::Interact()
@@ -400,6 +426,31 @@ void APlayerCharacter::StopAiming()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
+void APlayerCharacter::FireWeapon()
+{
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fire Clicked"));
+	if (HasAuthority())
+	{
+		if (bIsAiming && SpawnedWeapon)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fire Weapon"));
+
+			FTransform SocketTransform = SpawnedWeapon->GetMuzzleTransform();
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = this;
+
+			// Spawn the BP_Projectile at the location and rotation of the "Muzzle" socket
+			AProjectile* NewProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SocketTransform, SpawnParams);
+		}
+	}
+	else
+	{
+		Server_FireWeapon();
+	}
+
+}
+
 bool APlayerCharacter::Server_AimWeapon_Validate()
 {
 	return true;
@@ -418,4 +469,36 @@ bool APlayerCharacter::Server_StopAiming_Validate()
 void APlayerCharacter::Server_StopAiming_Implementation()
 {
 	StopAiming();
+}
+
+bool APlayerCharacter::Server_FireWeapon_Validate()
+{
+	return true;
+}
+
+void APlayerCharacter::Server_FireWeapon_Implementation()
+{
+	FireWeapon();
+}
+
+bool APlayerCharacter::MulticastSpineRotationX_Validate(const FRotator& NewSpineRotationX)
+{
+	return true;
+}
+
+void APlayerCharacter::MulticastSpineRotationX_Implementation(const FRotator& NewSpineRotationX)
+{
+	SpineRotationX = NewSpineRotationX;
+}
+
+bool APlayerCharacter::Server_SpineRotationX_Validate(const FRotator& NewSpineRotationX)
+{
+	return true;
+
+}
+
+void APlayerCharacter::Server_SpineRotationX_Implementation(const FRotator& NewSpineRotationX)
+{
+	// Call the multicast function to update SpineRotationX on all clients
+	MulticastSpineRotationX(NewSpineRotationX);
 }

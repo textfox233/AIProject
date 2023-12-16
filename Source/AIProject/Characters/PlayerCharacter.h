@@ -27,6 +27,14 @@ class AIPROJECT_API APlayerCharacter : public AAIProjectCharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 	
+	/** Move Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MoveAction;
+
+	/** Look Input Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* LookAction;
+
 	/** Interact Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* InteractAction;
@@ -56,6 +64,9 @@ public:
 
 	// Override SetupPlayerInputComponent to add additional bindings
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Declare the Look function as virtual
+	virtual void Look(const FInputActionValue& Value);
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -95,25 +106,25 @@ protected:
 	bool Server_StopAiming_Validate();
 
 	// Remote Procedure Call to ensure that firing weapon is replicated across clients
-//	UFUNCTION(Server, Reliable, WithValidation)
-//	void Server_FireWeapon();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_FireWeapon();
 
 	// Validation for firing RPC
-//	bool Server_FireWeapon_Validate();
+	bool Server_FireWeapon_Validate();
 
 	// Remote Procedure Call to ensure spine rotation is replicated across clients
-//	UFUNCTION(Server, Reliable, WithValidation)
-//	void Server_SpineRotationX(const FRotator& NewSpineRotationX);
+	UFUNCTION(Server, Reliable, WithValidation)
+	void Server_SpineRotationX(const FRotator& NewSpineRotationX);
 
 	// Validation for spine rotation RPC
-//	bool Server_SpineRotationX_Validate(const FRotator& NewSpineRotationX);
+	bool Server_SpineRotationX_Validate(const FRotator& NewSpineRotationX);
 
 	//
-//	UFUNCTION(NetMulticast, Reliable, WithValidation)
-//	void MulticastSpineRotationX(const FRotator& NewSpineRotationX);
+	UFUNCTION(NetMulticast, Reliable, WithValidation)
+	void MulticastSpineRotationX(const FRotator& NewSpineRotationX);
 
 	//
-//	bool MulticastSpineRotationX_Validate(const FRotator& NewSpineRotationX);
+	bool MulticastSpineRotationX_Validate(const FRotator& NewSpineRotationX);
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -157,8 +168,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Character")
 	void StopAiming();
 
-	//	UFUNCTION(BlueprintCallable, Category = "Character")
-	//	void FireWeapon();
+	UFUNCTION(BlueprintCallable, Category = "Character")
+	void FireWeapon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	float AimFOV = 60;
@@ -169,8 +180,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Weapons")
 	class AWeapon* SpawnedWeapon;
 
-	//	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	//	TSubclassOf<class AProjectile> ProjectileClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
+	TSubclassOf<class AProjectile> ProjectileClass;
 
 	UPROPERTY(Replicated, VisibleAnywhere, BlueprintReadOnly, Category = "Character")
 	FRotator SpineRotationX;
