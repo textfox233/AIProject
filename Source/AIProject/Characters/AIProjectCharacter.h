@@ -7,6 +7,9 @@
 #include "InputActionValue.h"
 #include "AIProjectCharacter.generated.h"
 
+class IInteractInterface;
+class AFlashlight;
+class UCurveFloat;
 
 UCLASS(config = Game)
 class AAIProjectCharacter : public ACharacter, public IHitInterface
@@ -22,12 +25,12 @@ class AAIProjectCharacter : public ACharacter, public IHitInterface
 	class UInputMappingContext* DefaultMappingContext;
 
 	/** Input Actions */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* JumpAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* LookAction;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// class UInputAction* JumpAction;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// class UInputAction* MoveAction;
+	// UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	// class UInputAction* LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* TestAction1;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -56,6 +59,7 @@ class AAIProjectCharacter : public ACharacter, public IHitInterface
 	bool bDebugStates = false;
 
 public:
+	// Sets default values for this character's properties
 	AAIProjectCharacter();
 
 	/** Melee Component */
@@ -68,6 +72,12 @@ public:
 	void Die();
 
 protected:
+
+	// Called to bind functionality to input (APawn interface)
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// To add mapping context
+	virtual void BeginPlay();
 
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
