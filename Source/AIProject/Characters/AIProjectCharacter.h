@@ -90,12 +90,6 @@ protected:
 	void TestFunction2(const FInputActionValue& Value);
 	void TestFunction3(const FInputActionValue& Value);
 
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
-	// To add mapping context
-	virtual void BeginPlay();
-
 	// Debug messages
 	virtual void Tick(float DeltaSeconds) override;
 
