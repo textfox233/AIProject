@@ -173,12 +173,10 @@ void AAIProjectCharacter::SetActionState(EActionState NewState)
 	{
 		FString currentState = UEnum::GetValueAsString(GetActionState());
 		FString msg = "EActionState transition: " + prevState + " -> " + currentState;
-		//FString debugMessage = FString::Printf(TEXT("Current action state is: %s"), actionState);
 		GEngine->AddOnScreenDebugMessage(
 			-1,
 			5.f,
 			FColor::Yellow,
-			//FString::Printf(TEXT("Cast Failed: owner character is %s"), *OwnerComp.GetOwner()->GetName())
 			msg
 		);
 	}

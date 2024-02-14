@@ -317,12 +317,12 @@ void UMeleeComponent::PerformBasicAttack()
 			}
 			return;
 		}
-		// play the attack and set the action state
+		// play the attack (and set the action state?)
 		if (BasicAttackMontage)
 		{
 			owningCharacter->PlayAnimMontage(BasicAttackMontage);
 
-			owningCharacter->SetActionState(EActionState::EAS_Attacking);
+			//owningCharacter->SetActionState(EActionState::EAS_Attacking);
 
 			//if (bDebugMsg && GEngine)
 			//{

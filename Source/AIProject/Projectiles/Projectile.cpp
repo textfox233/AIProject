@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GameFramework/Character.h"
 #include "Components/SceneComponent.h"
 
 // Sets default values
@@ -59,5 +60,69 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    // put hit detection here?
+	DrawRadialAtk();
 }
 
+AActor* AProjectile::DrawRadialAtk()
+{
+	/// debug msg
+	//if (bDebugMsg && GEngine)
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString(TEXT("Drawing Debug Sphere"))
+		);
+	}
+
+	// get owning character
+	AActor* owningActor = GetOwner();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString::Printf(TEXT("%s Owner is %s"), *this->GetName(), *owningActor->GetName())
+			);
+	}
+	ACharacter* owningCharacter = Cast<ACharacter>(owningActor);
+
+	if (owningCharacter)
+	// find the focal point
+	{
+		// get bone
+		//FName leftHandBone = "hand_l";
+		//FVector focalPoint = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
+		FVector focalPoint = CollisionSphere->GetComponentLocation();
+
+		// collision parameters - ignore self and owner
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.AddIgnoredActor(owningCharacter);
+
+		//	collect variables
+		FCollisionShape Sphere = FCollisionShape::MakeSphere(CollisionSphere->GetUnscaledSphereRadius());
+		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
+
+		///	Check for collisions via UE5 sweep function
+		GetWorld()->SweepSingleByChannel(
+			HitResult,
+			focalPoint,
+			focalPoint,
+			FQuat::Identity,
+			ECC_Pawn,
+			Sphere
+		);
+
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
+		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, false, 1.0f); }
+	//	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *focalPoint.ToCompactString()); }
+
+	//	return HitResult.GetActor();
+	}
+	return nullptr;
+}
