@@ -61,17 +61,16 @@ void AProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-AActor* AProjectile::DrawRadialAtk()
+AActor* AProjectile::HitDetectionSpherical()
 {
 	/// debug msg
 	if (bDebugMsg && GEngine)
-	//if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			3,
 			2.f,
 			FColor::Yellow,
-			FString(TEXT("Drawing Debug Sphere"))
+			FString(TEXT("Drawing Spherical Hit Detection"))
 		);
 	}
 
@@ -88,11 +87,6 @@ AActor* AProjectile::DrawRadialAtk()
 	}
 	ACharacter* owningCharacter = Cast<ACharacter>(owningActor);
 
-	// draw a line between points
-	// compare current position to last position (if there is a last position saved)
-	// is there a prev saved point?
-	// record current position
-
 	if (owningCharacter)
 	// find the focal point
 	{
@@ -107,15 +101,6 @@ AActor* AProjectile::DrawRadialAtk()
 		FCollisionShape Sphere = FCollisionShape::MakeSphere(CollisionSphere->GetUnscaledSphereRadius());
 		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
 
-		///	Check for collisions via UE5 line trace function
-		GetWorld()->LineTraceSingleByChannel(
-			HitResult,
-			LastKnownPosition,
-			FocalPoint,
-			ECC_Camera,
-			QueryParams
-		);
-
 		///	Check for collisions via UE5 sweep function
 		GetWorld()->SweepSingleByChannel(
 			HitResult,
@@ -126,26 +111,23 @@ AActor* AProjectile::DrawRadialAtk()
 			Sphere
 		);
 
-		if (bDrawDebug) { DrawDebugSphere(GetWorld(), FocalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
-		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), FocalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, false, 1.0f); }
-		//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *FocalPoint.ToCompactString()); }
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), FocalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, bPersistentShapes, 1.0f); }
 
-	//	return HitResult.GetActor();
+		return HitResult.GetActor();
 	}
 	return nullptr;
 }
 
-AActor* AProjectile::DrawLine()
+AActor* AProjectile::HitDetectionLinear()
 {
 	/// debug msg
 	if (bDebugMsg && GEngine)
-		//if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			3,
 			2.f,
 			FColor::Yellow,
-			FString(TEXT("Drawing Debug Sphere"))
+			FString(TEXT("Drawing Linear Hit Detection"))
 		);
 	}
 
@@ -162,14 +144,9 @@ AActor* AProjectile::DrawLine()
 	}
 	ACharacter* owningCharacter = Cast<ACharacter>(owningActor);
 
-	// draw a line between points
-	// compare current position to last position (if there is a last position saved)
-	// is there a prev saved point?
-	// record current position
-
 	if (owningCharacter)
 	{
-		// find the focal point
+		// find the new position
 		FVector NewPosition = CollisionSphere->GetComponentLocation();
 
 		// collision parameters - ignore self and owner
@@ -177,35 +154,21 @@ AActor* AProjectile::DrawLine()
 		QueryParams.AddIgnoredActor(this);
 		QueryParams.AddIgnoredActor(owningCharacter);
 
-		//	collect variables
-		//FCollisionShape Sphere = FCollisionShape::MakeSphere(CollisionSphere->GetUnscaledSphereRadius());
 		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
 
 		///	Check for collisions via UE5 line trace function
 		GetWorld()->LineTraceSingleByChannel(
 			HitResult,
-			LastKnownPosition,
-			NewPosition,
-			ECC_Camera,
+			LastKnownPosition,	// start
+			NewPosition,		// end
+			ECC_Camera,			// collision channel
 			QueryParams
 		);
 
-		/////	Check for collisions via UE5 sweep function
-		//GetWorld()->SweepSingleByChannel(
-		//	HitResult,
-		//	FocalPoint,
-		//	FocalPoint,
-		//	FQuat::Identity,
-		//	ECC_Pawn,
-		//	Sphere
-		//);
-
-		if (bDrawDebug) { DrawDebugLine(GetWorld(), LastKnownPosition, NewPosition, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
-		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), NewPosition, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
-		if (bDrawDebug) { DrawDebugSphere(GetWorld(), NewPosition, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, true, 1.0f); }
-		//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *NewPosition.ToCompactString()); }
-
-	//	return HitResult.GetActor();
+		if (bDrawDebug) { DrawDebugLine(GetWorld(), LastKnownPosition, NewPosition, HitResult.bBlockingHit ? FColor::Green : FColor::Red, bPersistentShapes, 1.0f); }
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), NewPosition, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, bPersistentShapes, 1.0f); }
+	
+		return HitResult.GetActor();
 	}
 	return nullptr;
 }

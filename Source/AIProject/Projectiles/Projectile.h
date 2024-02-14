@@ -50,15 +50,17 @@ protected:
 
 private:	
 	UFUNCTION(BlueprintCallable)
-	AActor* DrawRadialAtk();
+	AActor* HitDetectionSpherical();
 
 	UFUNCTION(BlueprintCallable)
-	AActor* DrawLine();
+	AActor* HitDetectionLinear();
 
 
 	// -- Debug booleans
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
 	bool bDrawDebug = false;
+	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
+	bool bPersistentShapes = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
 	bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
