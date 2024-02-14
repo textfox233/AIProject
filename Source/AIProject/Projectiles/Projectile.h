@@ -55,6 +55,8 @@ private:
 	UFUNCTION(BlueprintCallable)
 	AActor* HitDetectionLinear();
 
+	UFUNCTION(BlueprintCallable)
+	bool ProcessHitActor(AActor* HitActor);
 
 	// -- Debug booleans
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))

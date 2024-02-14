@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/SceneComponent.h"
+#include "AIProject/Interfaces/HitInterface.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -171,4 +172,47 @@ AActor* AProjectile::HitDetectionLinear()
 		return HitResult.GetActor();
 	}
 	return nullptr;
+}
+
+bool AProjectile::ProcessHitActor(AActor* HitActor)
+{
+	/// debug msg
+	//if (bDebugMsg && GEngine)
+	//{
+	//	GEngine->AddOnScreenDebugMessage(
+	//		-1,
+	//		2.f,
+	//		FColor::Yellow,
+	//		FString(TEXT("ProcessHitActor()"))
+	//	);
+	//}
+	 
+	// return true and destroy the projectile if an actor has been hit
+	if (HitActor)
+	{
+		/// debug msg
+		if (bDebugMsg && GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1,
+				2.f,
+				FColor::Green,
+				FString(TEXT("An Actor was Hit"))
+			);
+		}
+
+		// cast
+		if (IHitInterface* IHitActor = Cast<IHitInterface>(HitActor))
+		{
+			// call
+			IHitActor->GetHit(FVector::ForwardVector);
+		}
+		
+		// destroy the projectile and return true 
+		this->Destroy();
+
+		return true;
+	}
+	
+	return false;
 }
