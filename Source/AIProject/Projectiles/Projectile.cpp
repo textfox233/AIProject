@@ -59,16 +59,13 @@ void AProjectile::BeginPlay()
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-    // put hit detection here?
-	DrawRadialAtk();
 }
 
 AActor* AProjectile::DrawRadialAtk()
 {
 	/// debug msg
-	//if (bDebugMsg && GEngine)
-	if (GEngine)
+	if (bDebugMsg && GEngine)
+	//if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(
 			3,
@@ -91,13 +88,15 @@ AActor* AProjectile::DrawRadialAtk()
 	}
 	ACharacter* owningCharacter = Cast<ACharacter>(owningActor);
 
+	// draw a line between points
+	// compare current position to last position (if there is a last position saved)
+	// is there a prev saved point?
+	// record current position
+
 	if (owningCharacter)
 	// find the focal point
 	{
-		// get bone
-		//FName leftHandBone = "hand_l";
-		//FVector focalPoint = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
-		FVector focalPoint = CollisionSphere->GetComponentLocation();
+		FVector FocalPoint = CollisionSphere->GetComponentLocation();
 
 		// collision parameters - ignore self and owner
 		FCollisionQueryParams QueryParams;
@@ -108,19 +107,103 @@ AActor* AProjectile::DrawRadialAtk()
 		FCollisionShape Sphere = FCollisionShape::MakeSphere(CollisionSphere->GetUnscaledSphereRadius());
 		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
 
+		///	Check for collisions via UE5 line trace function
+		GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			LastKnownPosition,
+			FocalPoint,
+			ECC_Camera,
+			QueryParams
+		);
+
 		///	Check for collisions via UE5 sweep function
 		GetWorld()->SweepSingleByChannel(
 			HitResult,
-			focalPoint,
-			focalPoint,
+			FocalPoint,
+			FocalPoint,
 			FQuat::Identity,
 			ECC_Pawn,
 			Sphere
 		);
 
-		if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
-		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, false, 1.0f); }
-	//	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *focalPoint.ToCompactString()); }
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), FocalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
+		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), FocalPoint, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, false, 1.0f); }
+		//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *FocalPoint.ToCompactString()); }
+
+	//	return HitResult.GetActor();
+	}
+	return nullptr;
+}
+
+AActor* AProjectile::DrawLine()
+{
+	/// debug msg
+	if (bDebugMsg && GEngine)
+		//if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString(TEXT("Drawing Debug Sphere"))
+		);
+	}
+
+	// get owning character
+	AActor* owningActor = GetOwner();
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString::Printf(TEXT("%s Owner is %s"), *this->GetName(), *owningActor->GetName())
+		);
+	}
+	ACharacter* owningCharacter = Cast<ACharacter>(owningActor);
+
+	// draw a line between points
+	// compare current position to last position (if there is a last position saved)
+	// is there a prev saved point?
+	// record current position
+
+	if (owningCharacter)
+	{
+		// find the focal point
+		FVector NewPosition = CollisionSphere->GetComponentLocation();
+
+		// collision parameters - ignore self and owner
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+		QueryParams.AddIgnoredActor(owningCharacter);
+
+		//	collect variables
+		//FCollisionShape Sphere = FCollisionShape::MakeSphere(CollisionSphere->GetUnscaledSphereRadius());
+		FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
+
+		///	Check for collisions via UE5 line trace function
+		GetWorld()->LineTraceSingleByChannel(
+			HitResult,
+			LastKnownPosition,
+			NewPosition,
+			ECC_Camera,
+			QueryParams
+		);
+
+		/////	Check for collisions via UE5 sweep function
+		//GetWorld()->SweepSingleByChannel(
+		//	HitResult,
+		//	FocalPoint,
+		//	FocalPoint,
+		//	FQuat::Identity,
+		//	ECC_Pawn,
+		//	Sphere
+		//);
+
+		if (bDrawDebug) { DrawDebugLine(GetWorld(), LastKnownPosition, NewPosition, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
+		//if (bDrawDebug) { DrawDebugSphere(GetWorld(), NewPosition, CollisionSphere->GetUnscaledSphereRadius(), 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, true, 1.0f); }
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), NewPosition, CollisionSphere->GetUnscaledSphereRadius(), 12, FColor::Red, true, 1.0f); }
+		//if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *NewPosition.ToCompactString()); }
 
 	//	return HitResult.GetActor();
 	}

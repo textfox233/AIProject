@@ -22,6 +22,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+	UFUNCTION(BlueprintCallable)
+	void SetLastKnownPosition(FVector Position)	{ LastKnownPosition = Position; }
+	UFUNCTION(BlueprintCallable)
+	FVector GetLastKnownPosition() { return LastKnownPosition; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,8 +49,12 @@ protected:
 	UProjectileMovementComponent* ProjectileMovement;
 
 private:	
-
+	UFUNCTION(BlueprintCallable)
 	AActor* DrawRadialAtk();
+
+	UFUNCTION(BlueprintCallable)
+	AActor* DrawLine();
+
 
 	// -- Debug booleans
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
@@ -53,4 +63,6 @@ private:
 	bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|Projectile", meta = (AllowPrivateAccess = "true"))
 	bool bDebugMsg = false;
+
+	FVector LastKnownPosition;
 };
