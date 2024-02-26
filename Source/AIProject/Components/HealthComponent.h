@@ -15,7 +15,7 @@ class AIPROJECT_API UHealthComponent : public UActorComponent
 	// -- Health Values
 	UPROPERTY(EditAnywhere, Category = "Health")
 	float MaxHealth = 100;
-	UPROPERTY(VisibleAnywhere, Category = "Health")
+	UPROPERTY(EditAnywhere, Category = "Health")
 	float Health;
 
 	// -- Debug booleans
@@ -31,6 +31,9 @@ public:
 	UHealthComponent();
 
 	bool TakeDamage(float damageAmount);
+
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
 
 protected:
 	// Called when the game starts

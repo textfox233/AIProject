@@ -58,6 +58,11 @@ bool UHealthComponent::TakeDamage(float damageAmount)
 
 }
 
+float UHealthComponent::GetHealthPercent() const
+{
+	return Health/MaxHealth;
+}
+
 
 
 // Called when the game starts

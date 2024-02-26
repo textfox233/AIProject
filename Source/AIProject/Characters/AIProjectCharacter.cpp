@@ -324,3 +324,9 @@ void AAIProjectCharacter::TestFunction3(const FInputActionValue& Value)
 	//PlayAnimMontage(DeathMontage);
 
 }
+
+float AAIProjectCharacter::GetHealthPercent() const
+{
+	return HealthComponent->GetHealthPercent();
+	
+}

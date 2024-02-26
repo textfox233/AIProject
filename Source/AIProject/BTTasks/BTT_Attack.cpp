@@ -11,6 +11,7 @@
 
 EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UE_LOG(LogTemp, Display, TEXT("AI Attacking"));
 	if (bDebugMsg && GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(

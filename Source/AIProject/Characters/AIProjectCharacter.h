@@ -71,6 +71,9 @@ public:
 
 	void Die();
 
+	UFUNCTION(BlueprintPure)
+	float GetHealthPercent() const;
+
 protected:
 
 	// Called to bind functionality to input (APawn interface)
