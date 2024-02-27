@@ -57,10 +57,15 @@ private:
 		bool bDebugMsg = false;
 
 		//UPROPERTY(Category = "Collision")
-		//UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		//UPROPERTY(EditDefaultsOnly)
-		//FComponentReference RightUnarmed;
+	//UPROPERTY(EditAnywhere, BlueprintReadwrite, meta = (AllowPrivateAccess = "true"))
+	//	FComponentReference RightUnarmed;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadwrite, meta = (AllowPrivateAccess = "true"))
+	//	USceneComponent* SceneComponent;
+
+
+	//	UActorComponent* RightUnarmedCollisionComponent;
 
 	// -- Timer Handle
 	FTimerHandle TimerHandle;

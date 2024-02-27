@@ -36,6 +36,8 @@ void UMeleeComponent::BeginPlay()
 			FString(TEXT("UMeleeComponent::BeginPlay()"))
 		);
 	}
+
+	//RightUnarmedCollisionComponent = RightUnarmed.GetComponent(GetOwner());
 }
 
 
@@ -67,8 +69,8 @@ void UMeleeComponent::HitDetectionInProgress()
 	FVector attackEnd = targetCharacter->GetMesh()->GetBoneLocation(rightHandBone, EBoneSpaces::WorldSpace);
 
 	// perform trace
-	AActor* hit = DrawRadialAtk(attackOrigin);
-	//AActor* hit = DetectLinearAtk(attackOrigin, attackEnd);
+	//AActor* hit = DrawRadialAtk(attackOrigin);
+	AActor* hit = DetectLinearAtk(attackOrigin, attackEnd);
 
 	// process the hit
 	if (ProcessMeleeHit(hit))
