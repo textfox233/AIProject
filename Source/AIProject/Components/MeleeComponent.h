@@ -32,8 +32,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void EndHitDetection();
 
-	// -- Draw a sphere to track an attack's movement and detect hit events
-	AActor* DrawRadialAtk();
+	// -- Draw a sphere to detect hit events
+	AActor* DrawRadialAtk(FVector originPoint);
+
+	// -- Draw a line to detect hit events
+	AActor* DetectLinearAtk(FVector startPoint, FVector endPoint);
 
 	// -- Determine if anything was hit by a sphere, and if damage should be applied. Returns TRUE if any damage was dealt
 	bool ProcessMeleeHit(AActor* hitActor);
@@ -52,6 +55,12 @@ private:
 		bool bDebugLog = false;
 	UPROPERTY(EditAnywhere, BlueprintReadwrite, Category = "Debug|MeleeComponent", meta = (AllowPrivateAccess = "true"))
 		bool bDebugMsg = false;
+
+		//UPROPERTY(Category = "Collision")
+		//UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
+		//UPROPERTY(EditDefaultsOnly)
+		//FComponentReference RightUnarmed;
+
 
 	// -- Timer Handle
 	FTimerHandle TimerHandle;

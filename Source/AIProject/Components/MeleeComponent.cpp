@@ -55,16 +55,20 @@ void UMeleeComponent::HitDetectionInProgress()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("timer active"));
 
-	// perform line trace
-	AActor* hit = DrawRadialAtk();
+	// get owning character
+	AActor* characterOwner = GetOwner();
+	ACharacter* targetCharacter = Cast<ACharacter>(characterOwner);
+	
+	// find the attack's origin point (hand bone)
+	FName leftHandBone = "hand_l";
+	FName rightHandBone = "hand_r";
+	FVector attackOrigin = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
+	//FVector attackEnd = attackOrigin + (FVector::ForwardVector * 200);
+	FVector attackEnd = targetCharacter->GetMesh()->GetBoneLocation(rightHandBone, EBoneSpaces::WorldSpace);
 
-	/// process the hit
-	//if (UMeleeComponent(hit))
-	//	// if hit was valid
-	//{
-	//	// stop line tracing - should prevent multiple hits per swing
-	//	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-	//}
+	// perform trace
+	AActor* hit = DrawRadialAtk(attackOrigin);
+	//AActor* hit = DetectLinearAtk(attackOrigin, attackEnd);
 
 	// process the hit
 	if (ProcessMeleeHit(hit))
@@ -97,7 +101,7 @@ void UMeleeComponent::EndHitDetection()
 }
 
 // -- Draw a line trace to track a weapon's movement and detect hit events
-AActor* UMeleeComponent::DrawRadialAtk()
+AActor* UMeleeComponent::DrawRadialAtk(FVector originPoint)
 {
 	/// debug msg
 	if (bDebugMsg && GEngine)
@@ -111,19 +115,20 @@ AActor* UMeleeComponent::DrawRadialAtk()
 	}
 	 
 	// get owning character
-	AActor* characterOwner = GetOwner();
-	ACharacter* targetCharacter = Cast<ACharacter>(characterOwner);
-
-	if (targetCharacter)
+	//AActor* characterOwner = GetOwner();
+	//ACharacter* targetCharacter = Cast<ACharacter>(characterOwner);
+	//
+	//if (targetCharacter)
 	// find the focal point
-	{
-		// get bone
-		FName leftHandBone = "hand_l";
-		FVector focalPoint = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
+	//{
+		//// get bone
+		//FName leftHandBone = "hand_l";
+		//FVector focalPoint = targetCharacter->GetMesh()->GetBoneLocation(leftHandBone, EBoneSpaces::WorldSpace);
 
 		// collision parameters - ignore self
 		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(characterOwner);
+		QueryParams.AddIgnoredActor(GetOwner());
+		if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Added %s as an ignored actor"), *GetOwner()->GetName()); }
 
 		//	collect variables
 		FCollisionShape Sphere = FCollisionShape::MakeSphere(10.f);
@@ -132,19 +137,21 @@ AActor* UMeleeComponent::DrawRadialAtk()
 		///	Check for collisions via UE5 sweep function
 		GetWorld()->SweepSingleByChannel(
 			HitResult,
-			focalPoint,
-			focalPoint,
+			originPoint,
+			originPoint,
 			FQuat::Identity,
 			ECC_Pawn,
-			Sphere
+			Sphere,
+			QueryParams
 		);
 
-		if (bDrawDebug) { DrawDebugSphere(GetWorld(), focalPoint, 10.f, 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, false, 1.0f); }
-		if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *focalPoint.ToCompactString()); }
+		if (bDrawDebug) { DrawDebugSphere(GetWorld(), originPoint, 10.f, 12, HitResult.bBlockingHit ? FColor::Green : FColor::Red, false, 1.0f); }
+		if (bDebugLog && HitResult.bBlockingHit) { UE_LOG(LogTemp, Log, TEXT("Collision detected with %s"), *HitResult.GetActor()->GetName()); }
+		if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing sphere around %s "), *originPoint.ToCompactString()); }
 
 		return HitResult.GetActor();
-	}
-
+	//}
+	//
 	// grab focal point
 	//const USkeletalMeshComponent* skComp = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
 	//USkeletalMesh* skMesh = skComp->GetSkeletalMeshAsset();
@@ -175,6 +182,49 @@ AActor* UMeleeComponent::DrawRadialAtk()
 	
 	return nullptr;
 }
+
+AActor* UMeleeComponent::DetectLinearAtk(FVector startPoint, FVector endPoint)
+{
+	/// debug msg
+	if (bDebugMsg && GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(
+			3,
+			2.f,
+			FColor::Yellow,
+			FString(TEXT("Drawing Debug Sphere"))
+		);
+	}
+
+	// collision parameters - ignore self
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Added self (%s) as an ignored actor"), *GetOwner()->GetName()); }
+
+	//	collect variables
+	FHitResult HitResult;	// just a declaration, variable will be assigned a value by ref in the next function if an object is found
+
+	///	Check for collisions via UE5 sweep function
+	GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		startPoint,
+		endPoint,
+		ECC_Pawn,
+		QueryParams
+	);
+
+	if (bDrawDebug) { DrawDebugLine(GetWorld(), startPoint, endPoint, HitResult.bBlockingHit ? FColor::Green : FColor::Red, false, 1.0f); }
+	if (bDebugLog && HitResult.bBlockingHit) { UE_LOG(LogTemp, Log, TEXT("Collision detected with %s"), *HitResult.GetActor()->GetName()); }
+	if (bDebugLog) { UE_LOG(LogTemp, Log, TEXT("Tracing line between %s and &s"), *startPoint.ToCompactString(), *endPoint.ToCompactString()); }
+
+	return HitResult.GetActor();
+
+	/// nothing hit
+	if (bDebugLog) { UE_LOG(LogTemp, Warning, TEXT("Owner isn't a character")); }
+
+	return nullptr;
+}
+
 
 // -- Process melee hits (TRUE means damage was dealt, FALSE means the hit was invalid)
 bool UMeleeComponent::ProcessMeleeHit(AActor* hitActor)
