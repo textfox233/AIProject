@@ -432,6 +432,7 @@ void APlayerCharacter::FireWeapon()
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fire Clicked"));
 	if (HasAuthority())
 	{
+		// will add a check to see if spawned weapon has ammo
 		if (bIsAiming && SpawnedWeapon)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Fire Weapon"));
@@ -442,6 +443,11 @@ void APlayerCharacter::FireWeapon()
 
 			// Spawn the BP_Projectile at the location and rotation of the "Muzzle" socket
 			AProjectile* NewProjectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, SocketTransform, SpawnParams);
+
+			// Shoot a bullet from the gun and take away from current ammo in gun
+			// Could be simplified to just be shoot() and will take 1 away
+			SpawnedWeapon->SetCurrentAmmo(1);
+
 		}
 	}
 	else

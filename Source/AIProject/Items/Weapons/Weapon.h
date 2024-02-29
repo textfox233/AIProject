@@ -21,6 +21,19 @@ public:
 	// Function to get the transform of the muzzle socket
 	FTransform GetMuzzleTransform();
 
+	UFUNCTION(BlueprintPure)
+	int GetCurrentAmmo();
+
+	void SetCurrentAmmo(int AmmoUsed);
+
+	UFUNCTION(BlueprintPure)
+	bool HasAmmo();
+
+	UFUNCTION(BlueprintPure)
+	int GetMaxClipSize();
+
+	void Reload();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,5 +42,12 @@ protected:
 	USkeletalMeshComponent* WeaponMesh;
 
 private:
+
+	UPROPERTY(EditAnywhere, Category = "Ammo")
+	int MaxClipSize = 10;
+
+	// Set to VisibleAnywhere after testing
+	UPROPERTY(EditAnywhere, Category = "Ammo")
+	int CurrentAmmo;
 
 };

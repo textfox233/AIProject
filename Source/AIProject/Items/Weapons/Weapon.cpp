@@ -18,6 +18,8 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	CurrentAmmo = MaxClipSize;
 }
 
 // Called every frame
@@ -38,3 +40,33 @@ FTransform AWeapon::GetMuzzleTransform()
 
 	return FTransform::Identity;
 }
+
+int AWeapon::GetCurrentAmmo()
+{
+	return CurrentAmmo;
+}
+
+void AWeapon::SetCurrentAmmo(int AmmoUsed)
+{
+	CurrentAmmo = CurrentAmmo - AmmoUsed;	
+}
+
+bool AWeapon::HasAmmo()
+{
+	return CurrentAmmo > 0;
+}
+
+int AWeapon::GetMaxClipSize()
+{
+	return MaxClipSize;
+}
+
+void AWeapon::Reload()
+{
+	// To add:
+	// Number of clips available and a check to see if one is available
+	// Reload key mapping
+	// Animation or wait to use gun after reload
+	CurrentAmmo = MaxClipSize;
+}
+

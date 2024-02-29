@@ -36,8 +36,8 @@ AProjectile::AProjectile()
     // Initialize ProjectileMovement component
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
     ProjectileMovement->UpdatedComponent = RootComponent;
-    ProjectileMovement->InitialSpeed = 5000.0f;
-    ProjectileMovement->MaxSpeed = 5000.0f;
+    ProjectileMovement->InitialSpeed = 500000.0f;
+    ProjectileMovement->MaxSpeed = 500000.0f;
     ProjectileMovement->bShouldBounce = false;
     ProjectileMovement->Bounciness = 0.3f;
 
