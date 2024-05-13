@@ -14,39 +14,7 @@ void ABasicAIController::BeginPlay()
 	if (AIBehavior)
 	{
 		RunBehaviorTree(AIBehavior);
-
-		if (GetBlackboardComponent())
-		{
-			if (GetPawn())
-			{
-				// initialise blackboard values				// key					// value
-				GetBlackboardComponent()->SetValueAsVector(TEXT("StartLocation"), GetPawn()->GetActorLocation());
-				GetBlackboardComponent()->SetValueAsBool(TEXT("IsAlive"), true);
-
-				// debug msg
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(
-						-1,
-						15.f,
-						FColor::Green,
-						FString(TEXT("Success"))
-					);
-				}
-			}
-		}
-		// debug msg
-		else if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(
-				-1,
-				15.f,
-				FColor::Yellow,
-				FString(TEXT("Blackboard Tree Invalid"))
-			);
-		}
 	}
-
 	// debug msg
 	else if (GEngine)
 	{
@@ -59,10 +27,8 @@ void ABasicAIController::BeginPlay()
 	}
 }
 
-void ABasicAIController::Tick(float DeltaSeconds)
+void ABasicAIController::PostInitializeComponents() 
 {
-	Super::Tick(DeltaSeconds);
-
 	if (GetPawn())
 	{
 		// initialise blackboard values				// key					// value
@@ -80,6 +46,11 @@ void ABasicAIController::Tick(float DeltaSeconds)
 			);
 		}
 	}
+}
+
+void ABasicAIController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 
 	// get the target player from the blackboard
 	UObject* TargetPlayer = GetBlackboardComponent()->GetValueAsObject(TEXT("TargetPlayer"));

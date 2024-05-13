@@ -18,6 +18,7 @@ protected:
 
 public:
 	virtual void Tick(float DeltaSeconds) override;
+	virtual void PostInitializeComponents() override;
 
 private:
 	UPROPERTY(EditAnywhere)
